@@ -19,9 +19,8 @@ import KategoriArtikel from "./pages/aktivitas/artikel/KategoriArtikel";
 import TagArtikel from "./pages/aktivitas/artikel/TagArtikel";
 import Kunjungan from "./pages/aktivitas/kunjungan/Kunjungan";
 import DetailKunjungan from "./pages/aktivitas/kunjungan/DetailKunjungan";
-import PencarianBukuMajalah from "./pages/koleksi/BukuMajalah/PencarianBukuMajalah";
-import DetailBuku from "./pages/koleksi/BukuMajalah/DetailBuku";
-import DetailMajalah from "./pages/koleksi/BukuMajalah/DetailMajalah";
+import PencarianBuku from "./pages/koleksi/Buku/PencarianBuku";
+import DetailBuku from "./pages/koleksi/Buku/DetailBuku";
 import PencarianKoran from "./pages/koleksi/Koran/PencarianKoran";
 
 
@@ -46,9 +45,8 @@ function App() {
           <Route path="/blog/tagartikel" element={<TagArtikel />} />
           <Route path="/kunjungan" element={<Kunjungan />} />
           <Route path="/detail-kunjungan/:id" element={<DetailKunjungan />} />
-          <Route path="/bukumajalah" element={<PencarianBukuMajalah />} />
-          <Route path="/buku-majalah/detail-buku" element={<DetailBuku />} />
-          <Route path="/buku-majalah/detail-majalah" element={<DetailMajalah />} />
+          <Route path="/buku" element={<PencarianBuku />} />
+          <Route path="/buku/detail/:id" element={<DetailBuku />} />
           <Route path="/koran" element={<PencarianKoran />} />
         </Routes>
       </div>
