@@ -10,7 +10,7 @@ for (let year = 1950; year <= currentYear; year++) {
 TAHUN_OPTIONS.reverse();
 
 function PencarianBuku() {
-    const apiUrl = import.meta.env.VITE_API_EKATALOG;
+    const apiUrl = import.meta.env.VITE_API_E_KATALOG;
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mainKeyword, setMainKeyword] = useState('');
@@ -118,11 +118,10 @@ function PencarianBuku() {
             if (response.ok) {
                 const data = await response.json();
                 setSearchResults(data?.result || []);
-            } else if (response.status === 404) {
-                setSearchResults([]);
             } else {
+                const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError('Gagal melakukan pencarian');
+                setError(errorData.message || 'Gagal melakukan pencarian');
             }
         } catch (err) {
             console.error(err);
@@ -174,11 +173,10 @@ function PencarianBuku() {
             if (response.ok) {
                 const data = await response.json();
                 setSearchResults(data?.result || []);
-            } else if (response.status === 404) {
+            } else {
+                const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-        } else {
-                setSearchResults([]);
-                setError('Gagal melakukan pencarian');
+                setError(errorData.message || 'Gagal melakukan pencarian');
             }
         } catch (err) {
             console.error(err);
@@ -394,7 +392,7 @@ function PencarianBuku() {
                                             <span className="buku-type-badge">Buku</span>
                                             <div className="buku-image-wrapper">
                                                 <img
-                                                    src={getCoverImage(item['foto-cover'])}
+                                                    src={getCoverImage(item.foto_cover)}
                                                     alt={item.judul}
                                                     onError={(e) => {
                                                         e.target.src = 'https://via.placeholder.com/200x260/e0e0e0/999999?text=Tidak+Ada+Gambar';
