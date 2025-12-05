@@ -21,6 +21,8 @@ import Kunjungan from "./pages/aktivitas/kunjungan/Kunjungan";
 import DetailKunjungan from "./pages/aktivitas/kunjungan/DetailKunjungan";
 import PencarianBuku from "./pages/koleksi/Buku/PencarianBuku";
 import DetailBuku from "./pages/koleksi/Buku/DetailBuku";
+import PencarianMajalah from "./pages/koleksi/Majalah/PencarianMajalah";
+import DetailMajalah from "./pages/koleksi/Majalah/DetailMajalah";
 import PencarianKoran from "./pages/koleksi/Koran/PencarianKoran";
 
 
@@ -47,6 +49,8 @@ function App() {
           <Route path="/detail-kunjungan/:id" element={<DetailKunjungan />} />
           <Route path="/buku" element={<PencarianBuku />} />
           <Route path="/buku/detail/:id" element={<DetailBuku />} />
+          <Route path="/majalah" element={<PencarianMajalah />} />
+          <Route path="/majalah/detail/:id" element={<DetailMajalah />} />
           <Route path="/koran" element={<PencarianKoran />} />
         </Routes>
       </div>

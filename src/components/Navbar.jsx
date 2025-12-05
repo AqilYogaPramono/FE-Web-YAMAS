@@ -75,6 +75,7 @@ function Navbar() {
             <ul className="dropdown-menu">
               <li><a href="https://arsiponline.medayuagung.my.id/" target="_blank" rel="noopener noreferrer" className="nav-link" onClick={closeMenu}>Arsip Online</a></li>
               <li><NavLink to="/buku" className="nav-link" onClick={closeMenu}>Buku</NavLink></li>
+              <li><NavLink to="/majalah" className="nav-link" onClick={closeMenu}>Majalah</NavLink></li>
               <li><NavLink to="/koran" className="nav-link" onClick={closeMenu}>Koran</NavLink></li>
             </ul>
           </li>
