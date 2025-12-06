@@ -1,18 +1,19 @@
 .pembina-main {
-    padding: 2rem 1.5rem 4rem;
+    padding: 0;
     background-color: #f7f8fa;
+}
+
+.pembina-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
 }
 
 .pembina-section {
     max-width: 1120px;
     margin: 0 auto;
-}
-
-.pembina-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+    padding: 0 1.5rem;
 }
 
 .pembina-title {
@@ -41,14 +42,14 @@
     overflow: visible;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .pembina-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
     border-color: var(--primary-color);
 }
 
@@ -98,6 +99,30 @@
 
 .pembina-state-error {
     color: #b91c1c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.retry-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color, #0F8EC8);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.retry-button:hover {
+    background-color: var(--primary-dark, #0a6fa0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 142, 200, 0.3);
 }
 
 .pembina-skeleton-grid {
@@ -123,22 +148,30 @@
     }
 }
 
-@media (max-width: 768px) {
-    .pembina-main {
-        padding: 1.5rem 1.25rem 3rem;
+@media (max-width: 1024px) {
+    .pembina-header {
+        padding: 0 1.5rem;
     }
 
+    .pembina-section {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
     .pembina-header {
-        align-items: flex-start;
-        margin-bottom: 2rem;
+        padding: 0 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .pembina-section {
+        padding: 0 1.25rem;
     }
 
     .pembina-subtitle {
         font-size: 0.9rem;
     }
-}
 
-@media (max-width: 768px) {
     .pembina-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 1.25rem;
@@ -146,8 +179,13 @@
 }
 
 @media (max-width: 480px) {
-    .pembina-main {
-        padding-inline: 1rem;
+    .pembina-header {
+        padding: 0 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .pembina-section {
+        padding: 0 1rem;
     }
 
     .pembina-grid {

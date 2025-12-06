@@ -9,7 +9,15 @@ const Pembina = () => {
   useEffect(() => {
     const fetchPembina = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_PENGELOAAN_KONTEN}/API/pembina`);
+        setLoading(true);
+        setError(null);
+
+        const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+        if (!apiUrl) {
+          throw new Error("URL API tidak dikonfigurasi");
+        }
+
+        const response = await fetch(`${apiUrl}/API/pembina`);
         if (!response.ok) {
           throw new Error("Gagal mengambil data pembina");
         }
@@ -17,8 +25,8 @@ const Pembina = () => {
         const data = await response.json();
         setPembinaList(data?.pembina || []);
       } catch (err) {
-        console.error(err);
-        setError(err.message || "Terjadi kesalahan");
+        console.error("Error fetching pembina:", err);
+        setError("Gagal memuat data pembina. Silakan coba lagi nanti.");
       } finally {
         setLoading(false);
       }
@@ -29,11 +37,11 @@ const Pembina = () => {
 
   return (
     <main className="pembina-main">
-      <section className="pembina-section">
-        <div className="pembina-header">
-          <h1 className="pembina-title">Pembina</h1>
-        </div>
+      <div className="pembina-header">
+        <h1 className="pembina-title">Pembina</h1>
+      </div>
 
+      <section className="pembina-section">
         {loading && (
           <div className="pembina-state">
             <div className="pembina-skeleton-grid">
@@ -47,6 +55,12 @@ const Pembina = () => {
         {error && !loading && (
           <div className="pembina-state pembina-state-error">
             <p>{error}</p>
+            <button 
+              className="retry-button" 
+              onClick={() => window.location.reload()}
+            >
+              Coba Lagi
+            </button>
           </div>
         )}
 
@@ -79,6 +93,8 @@ const Pembina = () => {
           </>
         )}
       </section>
+
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 };
