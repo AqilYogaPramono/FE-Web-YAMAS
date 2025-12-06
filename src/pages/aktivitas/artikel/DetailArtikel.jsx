@@ -127,9 +127,14 @@ const DetailArtikel = () => {
                 <span className="blog-detail-tags-label">Kategori:</span>
                 <div className="blog-detail-tags-list">
                   {blog.kategori.map((kat) => (
-                    <span key={kat.id} className="blog-detail-tag">
+                    <Link
+                      key={kat.id}
+                      to={`/blog/kategori/${kat.id}`}
+                      className="blog-detail-tag blog-detail-tag-link"
+                      onClick={() => window.scrollTo(0, 0)}
+                    >
                       {kat.nama_kategori}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -140,9 +145,14 @@ const DetailArtikel = () => {
                 <span className="blog-detail-tags-label">Tag:</span>
                 <div className="blog-detail-tags-list">
                   {blog.tag.map((tag) => (
-                    <span key={tag.id} className="blog-detail-tag">
+                    <Link
+                      key={tag.id}
+                      to={`/blog/tag/${tag.id}`}
+                      className="blog-detail-tag blog-detail-tag-link"
+                      onClick={() => window.scrollTo(0, 0)}
+                    >
                       {tag.nama_tag}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>

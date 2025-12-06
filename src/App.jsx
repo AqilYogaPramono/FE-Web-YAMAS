@@ -42,9 +42,9 @@ function App() {
           <Route path="/pengumuman" element={<Pengumuman />} />
           <Route path="/detail-pengumuman/:id" element={<DetailPengumuman />} />
           <Route path="/blog" element={<Artikel />} />
+          <Route path="/blog/kategori/:id" element={<KategoriArtikel />} />
+          <Route path="/blog/tag/:id" element={<TagArtikel />} />
           <Route path="/blog/:tautan" element={<DetailArtikel />} />
-          <Route path="/blog/kategoriartikel" element={<KategoriArtikel />} />
-          <Route path="/blog/tagartikel" element={<TagArtikel />} />
           <Route path="/kunjungan" element={<Kunjungan />} />
           <Route path="/detail-kunjungan/:id" element={<DetailKunjungan />} />
           <Route path="/buku" element={<PencarianBuku />} />
