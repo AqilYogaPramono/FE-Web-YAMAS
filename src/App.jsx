@@ -28,7 +28,7 @@ import PencarianKoran from "./pages/koleksi/Koran/PencarianKoran";
 
 function App() {
   return (
-    <>
+    <div className="app-shell">
       <Navbar />
 
       <div className="content">
@@ -56,7 +56,7 @@ function App() {
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 }
 
