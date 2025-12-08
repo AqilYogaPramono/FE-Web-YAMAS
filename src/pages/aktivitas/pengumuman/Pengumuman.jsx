@@ -132,123 +132,125 @@ function Pengumuman() {
       </div>
 
       <section className="pengumuman-section">
-        <div className="pengumuman-search-container">
-          <form className="pengumuman-search-form" onSubmit={handleSearch}>
-            <div className="pengumuman-search-wrapper">
-              <span className="material-symbols-rounded">search</span>
-              <input
-                type="text"
-                placeholder="Cari pengumuman..."
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-              />
-              {searchKeyword && (
-                <span
-                  className="material-symbols-rounded clear-search"
-                  onClick={handleClearSearch}
-                >
-                  close
-                </span>
-              )}
-              <button type="submit" disabled={searchLoading}>
-                {searchLoading ? "Mencari..." : "Cari"}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {loading && (
-          <div className="pengumuman-state">
-            <div className="pengumuman-skeleton-list">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="pengumuman-skeleton-card">
-                  <div className="pengumuman-skeleton-content">
-                    <div className="pengumuman-skeleton-title"></div>
-                    <div className="pengumuman-skeleton-date"></div>
-                    <div className="pengumuman-skeleton-text"></div>
-                    <div className="pengumuman-skeleton-text"></div>
-                  </div>
-                  <div className="pengumuman-skeleton-thumbnail"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {error && !loading && !searchLoading && (
-          <div className="pengumuman-state pengumuman-state-error">
-            <p>{error}</p>
-            {hasSearched ? (
-              <button 
-                className="retry-button" 
-                onClick={handleClearSearch}
-              >
-                Hapus Pencarian
-              </button>
-            ) : (
-              <button 
-                className="retry-button" 
-                onClick={() => window.location.reload()}
-              >
-                Coba Lagi
-              </button>
-            )}
-          </div>
-        )}
-
-        {!loading && !error && !searchLoading && (
-          <>
-            {pengumuman.length === 0 ? (
-              <div className="pengumuman-state">
-                <p>{hasSearched ? "Pengumuman yang Anda cari tidak ditemukan." : "Belum ada pengumuman tersedia."}</p>
-              </div>
-            ) : (
-              <div className="announcement-card-list">
-                {pengumuman.map((item) => (
-                  <div
-                    key={item.id}
-                    className="announcement-card"
-                    onClick={() => handleCardClick(item.id)}
+        <div className="pengumuman-container">
+          <div className="pengumuman-search-card">
+            <form className="pengumuman-search-form" onSubmit={handleSearch}>
+              <div className="pengumuman-search-wrapper">
+                <span className="material-symbols-rounded search-icon">search</span>
+                <input
+                  type="text"
+                  placeholder="Cari pengumuman..."
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                />
+                {searchKeyword && (
+                  <span
+                    className="material-symbols-rounded clear-search"
+                    onClick={handleClearSearch}
                   >
-                    <div className="announcement-content">
-                      <div className="announcement-header">
-                        <h2 className="announcement-title">{item.judul || "Tanpa Judul"}</h2>
-                        {item.dibuat_pada && (
-                          <span className="announcement-date">
-                            Dibuat: {formatTanggal(item.dibuat_pada)}
-                          </span>
-                        )}
-                      </div>
-                      {item.isi && (
-                        <p className="announcement-excerpt">
-                          {item.isi}...
-                        </p>
-                      )}
+                    close
+                  </span>
+                )}
+                <button type="submit" disabled={searchLoading}>
+                  {searchLoading ? "Mencari..." : "Cari"}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {loading && (
+            <div className="pengumuman-state">
+              <div className="pengumuman-skeleton-list">
+                {[1, 2, 3].map((item) => (
+                  <div key={item} className="pengumuman-skeleton-card">
+                    <div className="pengumuman-skeleton-content">
+                      <div className="pengumuman-skeleton-title"></div>
+                      <div className="pengumuman-skeleton-date"></div>
+                      <div className="pengumuman-skeleton-text"></div>
+                      <div className="pengumuman-skeleton-text"></div>
                     </div>
-                    {item.foto && (
-                      <div className="announcement-thumbnail">
-                        <img
-                          src={`${apiUrl}/images/pengumuman/${item.foto}`}
-                          alt={item.judul || "Gambar pengumuman"}
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
+                    <div className="pengumuman-skeleton-thumbnail"></div>
                   </div>
                 ))}
               </div>
-            )}
-          </>
-        )}
-
-        {searchLoading && (
-          <div className="pengumuman-state">
-            <div className="loading-state">
-              <span className="material-symbols-rounded">hourglass_empty</span>
-              <p>Memuat hasil pencarian...</p>
             </div>
-          </div>
-        )}
+          )}
+
+          {error && !loading && !searchLoading && (
+            <div className="pengumuman-state pengumuman-state-error">
+              <p>{error}</p>
+              {hasSearched ? (
+                <button 
+                  className="retry-button" 
+                  onClick={handleClearSearch}
+                >
+                  Hapus Pencarian
+                </button>
+              ) : (
+                <button 
+                  className="retry-button" 
+                  onClick={() => window.location.reload()}
+                >
+                  Coba Lagi
+                </button>
+              )}
+            </div>
+          )}
+
+          {!loading && !error && !searchLoading && (
+            <>
+              {pengumuman.length === 0 ? (
+                <div className="pengumuman-state">
+                  <p>{hasSearched ? "Pengumuman yang Anda cari tidak ditemukan." : "Belum ada pengumuman tersedia."}</p>
+                </div>
+              ) : (
+                <div className="announcement-card-list">
+                  {pengumuman.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`announcement-card ${item.foto ? "with-image" : "no-image"}`}
+                      onClick={() => handleCardClick(item.id)}
+                    >
+                      <div className="announcement-content">
+                        <div className="announcement-header">
+                          <h2 className="announcement-title">{item.judul || "Tanpa Judul"}</h2>
+                          {item.dibuat_pada && (
+                            <span className="announcement-date">
+                              Dibuat: {formatTanggal(item.dibuat_pada)}
+                            </span>
+                          )}
+                        </div>
+                        {item.isi && (
+                          <p className="announcement-excerpt">
+                            {item.isi}...
+                          </p>
+                        )}
+                      </div>
+                      {item.foto && (
+                        <div className="announcement-thumbnail">
+                          <img
+                            src={`${apiUrl}/images/pengumuman/${item.foto}`}
+                            alt={item.judul}
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {searchLoading && (
+            <div className="pengumuman-state">
+              <div className="loading-state">
+                <span className="material-symbols-rounded">hourglass_empty</span>
+                <p>Memuat hasil pencarian...</p>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       <div style={{ height: "50px" }}></div>
