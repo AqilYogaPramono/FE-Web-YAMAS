@@ -51,27 +51,34 @@ function DetailPengumuman() {
     if (!tanggal) return "";
     
     const date = new Date(tanggal);
-    const options = { 
+    const dateOptions = { 
       year: "numeric", 
       month: "long", 
-      day: "numeric",
+      day: "numeric" 
+    };
+    const timeOptions = {
       hour: "2-digit",
       minute: "2-digit"
     };
     
-    return date.toLocaleDateString("id-ID", options);
+    const tanggalFormatted = date.toLocaleDateString("id-ID", dateOptions);
+    const waktuFormatted = date.toLocaleTimeString("id-ID", timeOptions);
+    
+    return `${tanggalFormatted}, ${waktuFormatted}`;
   };
 
   return (
     <main className="detail-pengumuman-main">
-      <div className="container">
+      <div className="detail-pengumuman-header">
         <button className="pengumuman-detail-back-button" onClick={() => navigate("/pengumuman")}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span>Kembali</span>
         </button>
+      </div>
 
+      <section className="detail-pengumuman-section">
         {loading && (
           <div className="detail-skeleton-container">
             <div className="detail-skeleton-header">
@@ -103,10 +110,10 @@ function DetailPengumuman() {
         {!loading && !error && pengumuman && (
           <>
             <div className="detail-header">
-              <h1 className="page-title">{pengumuman.judul || "Tanpa Judul"}</h1>
+              <h1 className="detail-title">{pengumuman.judul || "Tanpa Judul"}</h1>
               {pengumuman.dibuat_pada && (
                 <span className="detail-date">
-                  {formatTanggal(pengumuman.dibuat_pada)}
+                  Dibuat: {formatTanggal(pengumuman.dibuat_pada)}
                 </span>
               )}
             </div>
@@ -135,11 +142,9 @@ function DetailPengumuman() {
             </div>
           </>
         )}
-      </div>
+      </section>
 
-      <div className="container">
-        <div style={{ height: "50px" }}></div>
-      </div>
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 }
