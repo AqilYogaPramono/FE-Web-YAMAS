@@ -15,7 +15,6 @@ TAHUN_OPTIONS.reverse();
 
 function PencarianKoran() {
     const [penerbitKoran, setPenerbitKoran] = useState([]);
-    const [koleksiKoran, setKoleksiKoran] = useState([]);
     const [koleksiTerbaru, setKoleksiTerbaru] = useState([]);
     const [idPenerbitKoran, setIdPenerbitKoran] = useState('');
     const [tahun, setTahun] = useState('');
@@ -25,6 +24,7 @@ function PencarianKoran() {
     const [loading, setLoading] = useState(true);
     const [searchLoading, setSearchLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
 
@@ -32,12 +32,12 @@ function PencarianKoran() {
         const fetchPenerbit = async () => {
             try {
                 if (!apiUrl) {
-                    throw new Error('URL API tidak dikonfigurasi');
+                    return;
                 }
 
                 const response = await fetch(`${apiUrl}/API/penerbit-koran`);
                 if (!response.ok) {
-                    throw new Error('Gagal mengambil data penerbit koran');
+                    return;
                 }
 
                 const data = await response.json();
@@ -59,24 +59,25 @@ function PencarianKoran() {
         const fetchKoleksi = async () => {
             try {
                 setLoading(true);
-                setError(null);
+                setFetchError(null);
 
                 if (!apiUrl) {
-                    throw new Error('URL API tidak dikonfigurasi');
+                    setLoading(false);
+                    return;
                 }
 
                 const response = await fetch(`${apiUrl}/API/new-koran`);
                 if (!response.ok) {
-                    throw new Error('Gagal mengambil data koleksi koran');
+                    setLoading(false);
+                    return;
                 }
 
                 const data = await response.json();
                 const koleksi = data?.data || [];
-                setKoleksiKoran(koleksi);
                 setKoleksiTerbaru(koleksi.slice(0, 6));
             } catch (err) {
                 console.error(err);
-                setError(err.message || 'Terjadi kesalahan');
+                setFetchError('Gagal memuat data koleksi koran');
             } finally {
                 setLoading(false);
             }
@@ -97,6 +98,10 @@ function PencarianKoran() {
             setSearchLoading(true);
             setError(null);
 
+            if (!apiUrl) {
+                throw new Error('URL API tidak dikonfigurasi');
+            }
+
             const response = await fetch(`${apiUrl}/API/koran/search`, {
                 method: 'POST',
                 headers: {
@@ -110,16 +115,27 @@ function PencarianKoran() {
             });
 
             if (!response.ok) {
-                throw new Error('Gagal mencari koran');
+                throw new Error('Gagal melakukan pencarian koran');
             }
 
             const data = await response.json();
             setResults(data?.koran || []);
             setShowResults(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            setTimeout(() => {
+                const pageContent = document.querySelector('.page-content');
+                if (pageContent) {
+                    const offsetTop = pageContent.offsetTop - 20;
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                }
+            }, 100);
         } catch (err) {
             console.error(err);
-            setError(err.message || 'Terjadi kesalahan saat mencari');
+            if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                setError('Gagal terhubung ke server. Silakan coba lagi.');
+            } else {
+                setError(err.message || 'Terjadi kesalahan saat melakukan pencarian');
+            }
         } finally {
             setSearchLoading(false);
         }
@@ -231,9 +247,13 @@ function PencarianKoran() {
                         </div>
                     )}
 
-                    {!loading && !error && !showResults && (
+                    {!loading && !showResults && (
                         <>
-                            {koleksiTerbaru.length > 0 && (
+                            {fetchError ? (
+                                <div className="koran-error">
+                                    <p>{fetchError}</p>
+                                </div>
+                            ) : koleksiTerbaru.length > 0 ? (
                                 <div id="koranTerbaru">
                                     <div className="section-header">
                                         <h2 className="section-title">Koleksi Koran Terbaru</h2>
@@ -258,9 +278,7 @@ function PencarianKoran() {
                                         ))}
                                     </div>
                                 </div>
-                            )}
-
-                            {koleksiTerbaru.length === 0 && (
+                            ) : (
                                 <div className="koran-empty">
                                     <p>Belum ada koleksi koran yang tersedia.</p>
                                 </div>
@@ -283,7 +301,7 @@ function PencarianKoran() {
                             
                             {results.length === 0 ? (
                                 <div className="koran-empty-not-found">
-                                    <p>Data koran yang Anda cari tidak ada.</p>
+                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
                                 </div>
                             ) : (
                                 <>
