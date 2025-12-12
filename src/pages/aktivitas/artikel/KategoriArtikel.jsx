@@ -1,45 +1,133 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import "./KategoriArtikel.css";
 
 const KategoriArtikel = () => {
-  const dummyArticles = [
-    { id: 1, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-    { id: 2, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-    { id: 3, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-    { id: 4, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-    { id: 5, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-    { id: 6, title: "Sejarah: Judul Artikel Singkat...", category: "Sejarah" },
-  ];
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [articles, setArticles] = useState([]);
+  const [kategoriName, setKategoriName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+        const response = await fetch(`${apiUrl}/API/kategori/${id}`);
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data artikel");
+        }
+
+        const data = await response.json();
+        const articlesData = data?.data || [];
+        
+        if (data?.kategori) {
+          setKategoriName(data.kategori.nama_kategori);
+        }
+        
+        setArticles(articlesData);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Terjadi kesalahan");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchArticles();
+    }
+  }, [id]);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('id-ID', options);
+  };
 
   return (
-    <main className="page-content">
-      <div className="container">
-        <h1 className="page-title">
-          <Link to="/aktivitas/artikel">Artikel</Link>
-          <span>&gt;</span>
-          <span>Kategori Sejarah</span>
-        </h1>
+    <main className="blog-main">
+      <section className="blog-section">
+        <div className="blog-header">
+          <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Kembali</span>
+          </button>
+          <h1 className="blog-title">
+            <Link to="/blog">Kategori</Link>
+            <span style={{ margin: "0 10px", color: "#64748b" }}>&gt;</span>
+            <span>{kategoriName || ""}</span>
+          </h1>
+        </div>
 
-        <section className="category-grid">
-          {dummyArticles.map(article => (
-            <Link
-              to={`/artikel/detail/${article.id}`}
-              className="category-card-link"
-              key={article.id}
-            >
-              <div className="category-card">
-                <div className="category-card-image">Gambar Artikel</div>
+        {loading && (
+          <div className="blog-state">
+            <div className="blog-skeleton-grid">
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} className="blog-skeleton-card" />
+              ))}
+            </div>
+          </div>
+        )}
 
-                <div className="category-card-info">
-                  <h3>{article.title}</h3>
-                  <span className="category-tag">{article.category}</span>
+        {error && !loading && (
+          <div className="blog-state blog-state-error">
+            <p>{error}</p>
                 </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            {articles.length === 0 ? (
+              <div className="blog-state">
+                <p>Belum ada artikel dalam kategori ini.</p>
               </div>
+            ) : (
+              <div className="blog-grid">
+                {articles.map((article) => (
+                  <article className="blog-card" key={article.id}>
+                    <div className="blog-card-image">
+                      {article.foto_cover && (
+                        <img
+                          src={`${import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN}${article.foto_cover}`}
+                          alt={article.judul}
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                    <div className="blog-card-body">
+                      <div className="blog-card-meta">
+                        <span className="blog-card-date">
+                          {formatDate(article.dibuat_pada)}
+                        </span>
+                        <span className="blog-card-author">
+                          {article.nama_pembuat}
+                        </span>
+                      </div>
+                      <h2 className="blog-card-title">{article.judul}</h2>
+                      <p className="blog-card-desc">{article.ringkasan}</p>
+                      <Link
+                        to={`/blog/${article.tautan}`}
+                        className="blog-card-link"
+                        onClick={() => window.scrollTo(0, 0)}
+                      >
+                        Baca Selengkapnya
             </Link>
+                    </div>
+                  </article>
           ))}
+              </div>
+            )}
+          </>
+        )}
         </section>
-      </div>
     </main>
   );
 };

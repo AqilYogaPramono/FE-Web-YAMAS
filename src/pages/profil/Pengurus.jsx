@@ -9,7 +9,15 @@ const Pengurus = () => {
   useEffect(() => {
     const fetchPengurus = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_PENGELOAAN_KONTEN}/API/pengurus`);
+        setLoading(true);
+        setError(null);
+
+        const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+        if (!apiUrl) {
+          throw new Error("URL API tidak dikonfigurasi");
+        }
+
+        const response = await fetch(`${apiUrl}/API/pengurus`);
         if (!response.ok) {
           throw new Error("Gagal mengambil data pengurus");
         }
@@ -17,8 +25,8 @@ const Pengurus = () => {
         const data = await response.json();
         setPengurusList(data?.pengurus || []);
       } catch (err) {
-        console.error(err);
-        setError(err.message || "Terjadi kesalahan");
+        console.error("Error fetching pengurus:", err);
+        setError("Gagal memuat data pengurus. Silakan coba lagi nanti.");
       } finally {
         setLoading(false);
       }
@@ -29,11 +37,11 @@ const Pengurus = () => {
 
   return (
     <main className="pengurus-main">
-      <section className="pengurus-section">
-        <div className="pengurus-header">
-          <h1 className="pengurus-title">Pengurus</h1>
-        </div>
+      <div className="pengurus-header">
+        <h1 className="pengurus-title">Pengurus</h1>
+      </div>
 
+      <section className="pengurus-section">
         {loading && (
           <div className="pengurus-state">
             <div className="pengurus-skeleton-grid">
@@ -47,6 +55,12 @@ const Pengurus = () => {
         {error && !loading && (
           <div className="pengurus-state pengurus-state-error">
             <p>{error}</p>
+            <button 
+              className="retry-button" 
+              onClick={() => window.location.reload()}
+            >
+              Coba Lagi
+            </button>
           </div>
         )}
 
@@ -79,6 +93,8 @@ const Pengurus = () => {
           </>
         )}
       </section>
+
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 };

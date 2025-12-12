@@ -326,6 +326,19 @@
   font-weight: 500;
 }
 
+.blog-detail-tag-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.blog-detail-tag-link:hover {
+  background-color: #0F8EC8;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15, 142, 200, 0.2);
+}
+
 .blog-detail-related {
   margin-top: 3rem;
 }
