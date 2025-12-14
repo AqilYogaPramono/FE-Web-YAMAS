@@ -9,6 +9,8 @@ function Pengumuman() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
 
@@ -22,7 +24,7 @@ function Pengumuman() {
           throw new Error("URL API tidak dikonfigurasi");
         }
 
-        const response = await fetch(`${apiUrl}/API/pengumuman`);
+        const response = await fetch(`${apiUrl}/API/pengumuman?page=${currentPage}`);
         
         if (!response.ok) {
           throw new Error("Gagal mengambil data pengumuman");
@@ -30,6 +32,9 @@ function Pengumuman() {
 
         const data = await response.json();
         setPengumuman(data?.pengumuman || []);
+        if (data?.pagination) {
+          setTotalPages(data.pagination.totalHalaman);
+        }
       } catch (err) {
         console.error("Error fetching pengumuman:", err);
         setError("Gagal memuat data pengumuman. Silakan coba lagi nanti.");
@@ -41,7 +46,7 @@ function Pengumuman() {
     if (!hasSearched) {
       fetchPengumuman();
     }
-  }, [apiUrl, hasSearched]);
+  }, [apiUrl, hasSearched, currentPage]);
 
   const formatTanggal = (tanggal) => {
     if (!tanggal) return "";
@@ -70,11 +75,12 @@ function Pengumuman() {
   const handleClearSearch = async () => {
     setSearchKeyword("");
     setHasSearched(false);
+    setCurrentPage(1);
     setError(null);
     setLoading(true);
 
     try {
-      const response = await fetch(`${apiUrl}/API/pengumuman`);
+      const response = await fetch(`${apiUrl}/API/pengumuman?page=1`);
       
       if (!response.ok) {
         throw new Error("Gagal mengambil data pengumuman");
@@ -82,6 +88,9 @@ function Pengumuman() {
 
       const data = await response.json();
       setPengumuman(data?.pengumuman || []);
+      if (data?.pagination) {
+        setTotalPages(data.pagination.totalHalaman);
+      }
     } catch (err) {
       console.error("Error fetching pengumuman:", err);
       setError("Gagal memuat data pengumuman. Silakan coba lagi nanti.");
@@ -97,6 +106,7 @@ function Pengumuman() {
 
     setSearchLoading(true);
     setHasSearched(true);
+    setCurrentPage(1);
     setError(null);
 
     try {
@@ -111,6 +121,7 @@ function Pengumuman() {
       if (response.ok) {
         const data = await response.json();
         setPengumuman(data?.pengumuman || []);
+        setTotalPages(1);
       } else {
         const errorData = await response.json().catch(() => ({}));
         setPengumuman([]);
@@ -122,6 +133,13 @@ function Pengumuman() {
       setError("Terjadi kesalahan saat melakukan pencarian");
     } finally {
       setSearchLoading(false);
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -247,6 +265,38 @@ function Pengumuman() {
               <div className="loading-state">
                 <span className="material-symbols-rounded">hourglass_empty</span>
                 <p>Memuat hasil pencarian...</p>
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && !searchLoading && !hasSearched && pengumuman.length > 0 && (
+            <div className="pengumuman-pagination">
+              <div className="pagination-info">
+                Halaman {currentPage} dari {totalPages}
+              </div>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-nav-button"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  aria-label="Halaman sebelumnya"
+                >
+                  «
+                </button>
+                <button
+                  className="pagination-page-button active"
+                  disabled
+                >
+                  {currentPage}
+                </button>
+                <button
+                  className="pagination-nav-button"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Halaman berikutnya"
+                >
+                  »
+                </button>
               </div>
             </div>
           )}
