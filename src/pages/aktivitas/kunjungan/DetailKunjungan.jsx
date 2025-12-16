@@ -74,14 +74,16 @@ function DetailKunjungan() {
 
   return (
     <main className="detail-kunjungan-main">
-      <div className="container">
+      <div className="detail-kunjungan-header">
         <button className="kunjungan-detail-back-button" onClick={() => navigate("/kunjungan")}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span>Kembali</span>
         </button>
+      </div>
 
+      <section className="detail-kunjungan-section">
         {loading && (
           <div className="detail-skeleton-container">
             <div className="detail-skeleton-header">
@@ -113,7 +115,7 @@ function DetailKunjungan() {
         {!loading && !error && kunjungan && (
           <>
             <div className="detail-header">
-              <h1 className="page-title">{kunjungan.judul || "Tanpa Judul"}</h1>
+              <h1 className="detail-title">{kunjungan.judul || "Tanpa Judul"}</h1>
               {kunjungan.waktu_kunjungan && (
                 <span className="detail-waktu">
                   {formatWaktu(kunjungan.waktu_kunjungan)}
@@ -169,11 +171,9 @@ function DetailKunjungan() {
             </div>
           </>
         )}
-        </div>
+      </section>
 
-      <div className="container">
-        <div style={{ height: "50px" }}></div>
-      </div>
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 }
