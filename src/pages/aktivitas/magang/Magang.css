@@ -1,48 +1,157 @@
 .magang-main {
-  padding: 2rem 1.5rem 4rem;
+  padding: 0;
   background-color: #f7f8fa;
 }
 
 .magang-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2rem 0;
   margin-bottom: 2rem;
 }
 
-.page-title {
-  font-size: clamp(2rem, 5vw, 2.5rem);
+.magang-title {
+  font-size: clamp(2rem, 4vw, 2.4rem);
   font-weight: 700;
   color: var(--dark-color);
   margin: 0;
-  padding: 0;
+}
+
+.magang-description-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.magang-subtitle {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #ffffff;
+  line-height: 1.8;
+  text-align: justify;
+  padding: 1.75rem 2rem;
+  background-color: var(--primary-color, #0F8EC8);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(15, 142, 200, 0.2);
 }
 
 .magang-section {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.magang-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.magang-search-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.7rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.magang-search-form {
+  width: 100%;
+  margin: 0;
+}
+
+.magang-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  flex: 1 1 auto;
+  background: transparent;
+  border-radius: 10px;
+  border: none;
   padding: 0;
 }
 
-.magang-sub-heading {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
+.magang-search-wrapper .material-symbols-rounded {
   color: var(--primary-color, #0F8EC8);
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
-.magang-description {
-  margin-bottom: 2rem;
+.magang-search-wrapper .search-icon {
+  flex-shrink: 0;
 }
 
-.magang-description p {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: #374151;
-  text-align: justify;
-  margin: 0;
+.magang-search-wrapper input[type="text"] {
+  flex-grow: 1;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  color: var(--dark-color);
+  min-height: 44px;
+}
+
+.magang-search-wrapper input[type="text"]::placeholder {
+  color: #999;
+}
+
+.magang-search-wrapper .clear-search {
+  color: #999;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.magang-search-wrapper .clear-search:hover {
+  color: var(--primary-color, #0F8EC8);
+  background-color: rgba(15, 142, 200, 0.1);
+}
+
+.magang-search-wrapper button[type="submit"] {
+  background: var(--primary-color, #0F8EC8);
+  color: white;
+  border: none;
+  padding: 0.625rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.magang-search-wrapper button[type="submit"]:hover:not(:disabled) {
+  background: var(--primary-dark, #0a6fa0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 142, 200, 0.3);
+}
+
+.magang-search-wrapper button[type="submit"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .magang-state {
@@ -77,7 +186,7 @@
 .retry-button:hover {
   background-color: var(--primary-dark, #0a6fa0);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(15, 142, 200, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .magang-skeleton-grid {
@@ -123,7 +232,7 @@
   }
 }
 
-.kegiatan-grid {
+.magang-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
@@ -131,7 +240,7 @@
   margin-top: 1rem;
 }
 
-.kegiatan-card {
+.magang-card {
   background-color: #ffffff;
   border-radius: 12px;
   overflow: hidden;
@@ -143,13 +252,13 @@
   cursor: pointer;
 }
 
-.kegiatan-card:hover {
+.magang-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   border-color: #0F8EC8;
 }
 
-.kegiatan-card-image {
+.magang-card-image {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -158,7 +267,7 @@
   flex-shrink: 0;
 }
 
-.kegiatan-card-image img {
+.magang-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -167,11 +276,11 @@
   transition: transform 0.3s ease;
 }
 
-.kegiatan-card:hover .kegiatan-card-image img {
+.magang-card:hover .magang-card-image img {
   transform: scale(1.05);
 }
 
-.kegiatan-card-info {
+.magang-card-info {
   padding: 1.5rem;
   flex-grow: 1;
   display: flex;
@@ -180,7 +289,7 @@
   gap: 0.5rem;
 }
 
-.kegiatan-card-title {
+.magang-card-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1e293b;
@@ -192,32 +301,152 @@
   overflow: hidden;
 }
 
-.kegiatan-card-period {
+.magang-card-period {
   font-size: 0.875rem;
   color: #64748b;
   font-weight: 500;
   margin-top: auto;
 }
 
-@media (max-width: 768px) {
-  .magang-main {
-    padding: 1.5rem 1.25rem 3rem;
+.loading-state {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.loading-state .material-symbols-rounded {
+  font-size: 4rem;
+  color: var(--primary-color, #0F8EC8);
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-state p {
+  font-size: 1.2rem;
+  color: var(--dark-color);
+}
+
+.magang-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1.5rem 0;
+  width: 100%;
+}
+
+.pagination-info {
+  font-size: 0.95rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-nav-button,
+.pagination-page-button {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-nav-button:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.pagination-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+.pagination-page-button.active {
+  background-color: var(--primary-color, #0F8EC8);
+  color: #ffffff;
+  border-color: var(--primary-color, #0F8EC8);
+  cursor: default;
+}
+
+@media (max-width: 1024px) {
+  .magang-header {
+    padding: 1.75rem 1.5rem 0;
   }
 
+  .magang-section {
+    padding: 0 1.5rem;
+  }
+
+  .magang-subtitle {
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
   .magang-header {
+    padding: 1.5rem 1.25rem 0;
     margin-bottom: 1.5rem;
   }
 
-  .magang-sub-heading {
-    font-size: 1.5rem;
-    margin-top: 1.5rem;
+  .magang-section {
+    padding: 0 1.25rem;
   }
 
-  .magang-description p {
+  .magang-subtitle {
+    padding: 1.5rem 1.5rem;
     font-size: 1rem;
+    line-height: 1.7;
+    text-align: justify;
   }
 
-  .kegiatan-grid {
+  .magang-search-card {
+    padding: 1rem;
+    gap: 0.65rem;
+  }
+
+  .magang-search-wrapper {
+    gap: 0.6rem;
+  }
+
+  .magang-search-wrapper .material-symbols-rounded {
+    font-size: 1.25rem;
+  }
+
+  .magang-search-wrapper input[type="text"] {
+    font-size: 0.95rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .magang-search-wrapper button[type="submit"] {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .magang-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
@@ -225,15 +454,39 @@
   .magang-skeleton-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .magang-card-title {
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
-  .magang-main {
-    padding: 1rem 1rem 2rem;
+  .magang-header {
+    padding: 1.25rem 1rem 0;
+    margin-bottom: 1.25rem;
   }
 
-  .kegiatan-grid {
+  .magang-section {
+    padding: 0 1rem;
+  }
+
+  .magang-subtitle {
+    padding: 1.25rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    border-left-width: 3px;
+  }
+
+  .magang-search-wrapper .search-icon {
+    display: none;
+  }
+
+  .magang-search-wrapper {
+    gap: 0.5rem;
+  }
+
+  .magang-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
@@ -243,15 +496,39 @@
     gap: 1.5rem;
   }
 
-  .kegiatan-card-info {
+  .magang-card-info {
     padding: 1.25rem;
   }
 
-  .kegiatan-card-title {
+  .magang-card-title {
     font-size: 1.125rem;
   }
 
-  .kegiatan-card-period {
+  .magang-card-period {
     font-size: 0.875rem;
+  }
+
+  .magang-pagination {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    align-items: flex-start;
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .pagination-controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pagination-nav-button,
+  .pagination-page-button {
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
   }
 }
