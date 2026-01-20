@@ -29,12 +29,12 @@ function PencarianKoran() {
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            return;
+        }
         const fetchPenerbit = async () => {
             try {
-                if (!apiUrl) {
-                    return;
-                }
-
                 const response = await fetch(`${apiUrl}/API/penerbit-koran`);
                 if (!response.ok) {
                     return;
@@ -56,18 +56,19 @@ function PencarianKoran() {
     }, [apiUrl]);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            setLoading(false);
+            return;
+        }
         const fetchKoleksi = async () => {
             try {
                 setLoading(true);
                 setFetchError(null);
 
-                if (!apiUrl) {
-                    setLoading(false);
-                    return;
-                }
-
                 const response = await fetch(`${apiUrl}/API/new-koran`);
                 if (!response.ok) {
+                    setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
                     setLoading(false);
                     return;
                 }
@@ -77,7 +78,7 @@ function PencarianKoran() {
                 setKoleksiTerbaru(koleksi.slice(0, 6));
             } catch (err) {
                 console.error(err);
-                setFetchError('Gagal memuat data koleksi koran');
+                setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
             } finally {
                 setLoading(false);
             }
@@ -99,7 +100,10 @@ function PencarianKoran() {
             setError(null);
 
             if (!apiUrl) {
-                throw new Error('URL API tidak dikonfigurasi');
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
             }
 
             const response = await fetch(`${apiUrl}/API/koran/search`, {
@@ -115,7 +119,10 @@ function PencarianKoran() {
             });
 
             if (!response.ok) {
-                throw new Error('Gagal melakukan pencarian koran');
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
             }
 
             const data = await response.json();
@@ -131,11 +138,9 @@ function PencarianKoran() {
             }, 100);
         } catch (err) {
             console.error(err);
-            if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                setError('Gagal terhubung ke server. Silakan coba lagi.');
-            } else {
-                setError(err.message || 'Terjadi kesalahan saat melakukan pencarian');
-            }
+            setShowResults(false);
+            setResults([]);
+            setError('Gagal memuat data koran. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
         }
@@ -149,6 +154,7 @@ function PencarianKoran() {
         setShowResults(false);
         setResults([]);
         setError(null);
+        setFetchError(null);
     };
 
     const getPenerbitName = (id) => {
@@ -230,12 +236,6 @@ function PencarianKoran() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="koran-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {loading && (
                         <div className="koran-skeleton-section">
                             <div className="koran-skeleton-title"></div>
@@ -248,42 +248,43 @@ function PencarianKoran() {
                     )}
 
                     {!loading && !showResults && (
-                        <>
+                        <div id="koranTerbaru">
+                            <div className="section-header">
+                                <h2 className="section-title">Koleksi Koran Terbaru</h2>
+                                <p className="section-description">Jelajahi koleksi koran terbaru yang tersedia di perpustakaan kami</p>
+                            </div>
                             {fetchError ? (
-                                <div className="koran-error">
+                                <div className="koran-empty koran-empty-error">
                                     <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : koleksiTerbaru.length > 0 ? (
-                                <div id="koranTerbaru">
-                                    <div className="section-header">
-                                        <h2 className="section-title">Koleksi Koran Terbaru</h2>
-                                        <p className="section-description">Jelajahi koleksi koran terbaru yang tersedia di perpustakaan kami</p>
-                                    </div>
-                                    <div className="koran-grid">
-                                        {koleksiTerbaru.map((koran) => (
-                                            <div className="koran-card" key={koran.id}>
-                                                <div className="koran-image-wrapper">
-                                                    {koran.foto && (
-                                                        <img 
-                                                            src={`${apiUrl}/images/penerbit-koran/${koran.foto}`}
-                                                            alt={koran.nama_penerbit}
-                                                            loading="lazy"
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div className="koran-info">
-                                                    <h3>{koran.nama_penerbit}</h3>
-                                                </div>
+                                <div className="koran-grid">
+                                    {koleksiTerbaru.map((koran) => (
+                                        <div className="koran-card" key={koran.id}>
+                                            <div className="koran-image-wrapper">
+                                                {koran.foto && (
+                                                    <img 
+                                                        src={`${apiUrl}/images/penerbit-koran/${koran.foto}`}
+                                                        alt={koran.nama_penerbit}
+                                                        loading="lazy"
+                                                    />
+                                                )}
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="koran-info">
+                                                <h3>{koran.nama_penerbit}</h3>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
                                 <div className="koran-empty">
                                     <p>Belum ada koleksi koran yang tersedia.</p>
                                 </div>
                             )}
-                        </>
+                        </div>
                     )}
                     
                     {!loading && showResults && (
@@ -299,11 +300,19 @@ function PencarianKoran() {
                                 </button>
                             </div>
                             
-                            {results.length === 0 ? (
-                                <div className="koran-empty-not-found">
-                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
+                            {searchLoading ? (
+                                <div className="loading-state">
+                                    <span className="material-symbols-rounded">hourglass_empty</span>
+                                    <p>Memuat hasil pencarian...</p>
                                 </div>
-                            ) : (
+                            ) : error ? (
+                                <div className="koran-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : results.length > 0 ? (
                                 <>
                                     <div className="koran-results-wrapper koran-results-desktop">
                                         <table className="koran-results-table">
@@ -364,6 +373,10 @@ function PencarianKoran() {
                                         ))}
                                     </div>
                                 </>
+                            ) : (
+                                <div className="koran-empty-not-found">
+                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
+                                </div>
                             )}
                         </div>
                     )}

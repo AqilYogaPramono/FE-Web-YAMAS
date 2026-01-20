@@ -29,27 +29,43 @@ function PencarianMajalah() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+            return;
+        }
         fetchNewMajalah();
         fetchBahasa();
         fetchKategori();
-    }, []);
+    }, [apiUrl]);
 
     const fetchNewMajalah = async () => {
         try {
+            if (!apiUrl) {
+                setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/new-majalah`);
             if (response.ok) {
                 const data = await response.json();
                 setNewMajalah(data?.data || []);
+                setFetchError(null);
+            } else {
+                setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
+            setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         }
     };
 
     const fetchBahasa = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/bahasa`);
             if (response.ok) {
                 const data = await response.json();
@@ -62,6 +78,9 @@ function PencarianMajalah() {
 
     const fetchKategori = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/kategori`);
             if (response.ok) {
                 const data = await response.json();
@@ -86,6 +105,7 @@ function PencarianMajalah() {
         setSearchResults([]);
         setHasSearched(false);
         setError(null);
+        setFetchError(null);
     };
 
     const handleClearAdvance = () => {
@@ -107,6 +127,11 @@ function PencarianMajalah() {
         setError(null);
         
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/majalah/search`, {
                 method: 'POST',
                 headers: {
@@ -121,12 +146,12 @@ function PencarianMajalah() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -162,6 +187,11 @@ function PencarianMajalah() {
         setIsModalOpen(false);
 
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/majalah/advance-search`, {
                 method: 'POST',
                 headers: {
@@ -176,12 +206,12 @@ function PencarianMajalah() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -357,12 +387,6 @@ function PencarianMajalah() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="majalah-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {hasSearched ? (
                         <div id="majalahResults">
                             <div className="results-header">
@@ -380,6 +404,13 @@ function PencarianMajalah() {
                                 <div className="loading-state">
                                     <span className="material-symbols-rounded">hourglass_empty</span>
                                     <p>Memuat hasil pencarian...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="majalah-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 <div className="majalah-grid">
@@ -418,7 +449,14 @@ function PencarianMajalah() {
                                 <h2 className="section-title">Majalah Terbaru</h2>
                                 <p className="section-description">Jelajahi koleksi majalah terbaru yang tersedia di perpustakaan kami</p>
                             </div>
-                            {newMajalah.length > 0 ? (
+                            {fetchError ? (
+                                <div className="majalah-empty majalah-empty-error">
+                                    <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : newMajalah.length > 0 ? (
                                 <div className="majalah-grid">
                                     {newMajalah.map((item) => (
                                         <Link

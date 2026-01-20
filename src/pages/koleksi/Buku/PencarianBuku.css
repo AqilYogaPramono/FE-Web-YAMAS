@@ -401,6 +401,27 @@
     text-align: center;
 }
 
+.retry-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.75rem;
+}
+
+.retry-button:hover {
+    background-color: #0c729c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 142, 200, 0.3);
+}
+
 .buku-empty {
     background-color: #ffffff;
     border: 1px solid var(--border-color);
@@ -408,6 +429,17 @@
     padding: 3rem 2rem;
     text-align: center;
     color: var(--text-secondary);
+}
+
+.buku-empty-error {
+    background-color: #fee2e2;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .buku-empty-not-found {
@@ -419,6 +451,10 @@
     color: #dc3545;
     font-weight: 500;
     margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .results-header {

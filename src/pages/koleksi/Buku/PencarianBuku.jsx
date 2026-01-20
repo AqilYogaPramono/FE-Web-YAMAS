@@ -29,27 +29,43 @@ function PencarianBuku() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
+            return;
+        }
         fetchNewBooks();
         fetchBahasa();
         fetchKategori();
-    }, []);
+    }, [apiUrl]);
 
     const fetchNewBooks = async () => {
         try {
+            if (!apiUrl) {
+                setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/new-buku`);
             if (response.ok) {
                 const data = await response.json();
                 setNewBooks(data?.data || []);
+                setFetchError(null);
+            } else {
+                setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
+            setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
         }
     };
 
     const fetchBahasa = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/bahasa`);
             if (response.ok) {
                 const data = await response.json();
@@ -62,6 +78,9 @@ function PencarianBuku() {
 
     const fetchKategori = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/kategori`);
             if (response.ok) {
                 const data = await response.json();
@@ -86,6 +105,7 @@ function PencarianBuku() {
         setSearchResults([]);
         setHasSearched(false);
         setError(null);
+        setFetchError(null);
     };
 
     const handleClearAdvance = () => {
@@ -107,6 +127,11 @@ function PencarianBuku() {
         setError(null);
         
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/buku/search`, {
                 method: 'POST',
                 headers: {
@@ -121,12 +146,12 @@ function PencarianBuku() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data buku. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -162,6 +187,11 @@ function PencarianBuku() {
         setIsModalOpen(false);
 
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/buku/advance-search`, {
                 method: 'POST',
                 headers: {
@@ -176,12 +206,12 @@ function PencarianBuku() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data buku. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -357,12 +387,6 @@ function PencarianBuku() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="buku-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {hasSearched ? (
                         <div id="bukuResults">
                             <div className="results-header">
@@ -380,6 +404,13 @@ function PencarianBuku() {
                                 <div className="loading-state">
                                     <span className="material-symbols-rounded">hourglass_empty</span>
                                     <p>Memuat hasil pencarian...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="buku-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 <div className="buku-grid">
@@ -418,7 +449,14 @@ function PencarianBuku() {
                                 <h2 className="section-title">Buku Terbaru</h2>
                                 <p className="section-description">Jelajahi koleksi buku terbaru yang tersedia di perpustakaan kami</p>
                             </div>
-                            {newBooks.length > 0 ? (
+                            {fetchError ? (
+                                <div className="buku-empty buku-empty-error">
+                                    <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : newBooks.length > 0 ? (
                                 <div className="buku-grid">
                                     {newBooks.map((item) => (
                                         <Link
