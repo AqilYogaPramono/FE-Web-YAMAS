@@ -210,12 +210,14 @@ function Magang() {
                       className="magang-card"
                       onClick={() => handleCardClick(item.id)}
                     >
-                      {item.foto && (
+                      {item.cover && (
                         <div className="magang-card-image">
                           <img
-                            src={`${apiUrl}/images/magang/${item.foto}`}
+                            src={`${apiUrl}/images/magang/${item.cover}`}
                             alt={item.judul || "Gambar program magang"}
                             loading="lazy"
+                            width="3240"
+                            height="1272"
                           />
                         </div>
                       )}

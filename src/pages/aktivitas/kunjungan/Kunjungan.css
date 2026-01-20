@@ -209,7 +209,7 @@
 
 .kunjungan-skeleton-image {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3240 / 1272;
   background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.2s ease-in-out infinite;
@@ -261,7 +261,7 @@
 .kunjungan-card-image {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3240 / 1272;
   background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
   overflow: hidden;
   flex-shrink: 0;

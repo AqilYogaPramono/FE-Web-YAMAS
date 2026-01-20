@@ -209,12 +209,14 @@ function Kunjungan() {
                       className="kunjungan-card"
                       onClick={() => handleCardClick(item.id)}
                     >
-                      {item.foto && (
+                      {item.cover && (
                         <div className="kunjungan-card-image">
                           <img
-                            src={`${apiUrl}/images/kunjungan/${item.foto}`}
+                            src={`${apiUrl}/images/kunjungan/${item.cover}`}
                             alt={item.judul || "Gambar kunjungan"}
                             loading="lazy"
+                            width="3240"
+                            height="1272"
                           />
                         </div>
                       )}
