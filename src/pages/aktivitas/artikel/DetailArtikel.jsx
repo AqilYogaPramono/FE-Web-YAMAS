@@ -44,9 +44,21 @@ const DetailArtikel = () => {
     return date.toLocaleDateString('id-ID', options);
   };
 
+  const backButton = (
+    <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      <span>Kembali</span>
+    </button>
+  );
+
   if (loading) {
-  return (
+    return (
       <main className="blog-detail-main">
+        <div className="blog-detail-back-header">
+          {backButton}
+        </div>
         <section className="blog-detail-section">
           <div className="blog-detail-skeleton">
             <div className="blog-detail-skeleton-header" />
@@ -56,6 +68,8 @@ const DetailArtikel = () => {
             <div className="blog-detail-skeleton-content" />
           </div>
         </section>
+
+        <div style={{ height: "50px" }}></div>
       </main>
     );
   }
@@ -63,27 +77,28 @@ const DetailArtikel = () => {
   if (error || !blog) {
     return (
       <main className="blog-detail-main">
+        <div className="blog-detail-back-header">
+          {backButton}
+        </div>
         <section className="blog-detail-section">
           <div className="blog-detail-state blog-detail-state-error">
             <p>{error || "Blog tidak ditemukan"}</p>
           </div>
         </section>
+
+        <div style={{ height: "50px" }}></div>
       </main>
     );
   }
 
   return (
     <main className="blog-detail-main">
+      <div className="blog-detail-back-header">
+        {backButton}
+      </div>
       <section className="blog-detail-section">
-        <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span>Kembali</span>
-        </button>
-
         <article className="blog-detail-container">
-          <div className="blog-detail-header">
+          <div className="blog-detail-article-header">
             <h1 className="blog-detail-title">{blog.judul}</h1>
 
             {blog.ringkasan && (
@@ -192,6 +207,8 @@ const DetailArtikel = () => {
         </section>
         )}
       </section>
+
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 };
