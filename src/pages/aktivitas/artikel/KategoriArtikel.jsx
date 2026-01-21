@@ -9,16 +9,25 @@ const KategoriArtikel = () => {
   const [kategoriName, setKategoriName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, currentPage]);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
-        const response = await fetch(`${apiUrl}/API/kategori/${id}`);
+        setLoading(true);
+        setError(null);
+
+        if (!apiUrl) {
+          throw new Error("URL API tidak dikonfigurasi");
+        }
+
+        const response = await fetch(`${apiUrl}/API/kategori/${id}?page=${currentPage}`);
         if (!response.ok) {
           throw new Error("Gagal mengambil data artikel");
         }
@@ -28,6 +37,10 @@ const KategoriArtikel = () => {
         
         if (data?.kategori) {
           setKategoriName(data.kategori.nama_kategori);
+        }
+
+        if (data?.pagination) {
+          setTotalPages(data.pagination.totalHalaman);
         }
         
         setArticles(articlesData);
@@ -42,7 +55,7 @@ const KategoriArtikel = () => {
     if (id) {
       fetchArticles();
     }
-  }, [id]);
+  }, [id, currentPage, apiUrl]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -50,84 +63,128 @@ const KategoriArtikel = () => {
     return date.toLocaleDateString('id-ID', options);
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
-    <main className="blog-main">
+    <main className="blog-kategori-main">
+      <div className="blog-detail-back-header">
+        <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span>Kembali</span>
+        </button>
+      </div>
+
       <section className="blog-section">
-        <div className="blog-header">
-          <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>Kembali</span>
-          </button>
-          <h1 className="blog-title">
+        <div className="blog-container">
+          <h1 className="blog-kategori-title">
             <Link to="/blog">Kategori</Link>
-            <span style={{ margin: "0 10px", color: "#64748b" }}>&gt;</span>
+            <span className="blog-kategori-sep">&gt;</span>
             <span>{kategoriName || ""}</span>
           </h1>
-        </div>
 
-        {loading && (
-          <div className="blog-state">
-            <div className="blog-skeleton-grid">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="blog-skeleton-card" />
-              ))}
+          {loading && (
+            <div className="blog-state">
+              <div className="blog-skeleton-grid">
+                {[1, 2, 3, 4].map((item) => (
+                  <div key={item} className="blog-skeleton-card" />
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {error && !loading && (
-          <div className="blog-state blog-state-error">
-            <p>{error}</p>
+          {error && !loading && (
+            <div className="blog-state blog-state-error">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <>
+              {articles.length === 0 ? (
+                <div className="blog-state">
+                  <p>Belum ada artikel dalam kategori ini.</p>
                 </div>
-        )}
-
-        {!loading && !error && (
-          <>
-            {articles.length === 0 ? (
-              <div className="blog-state">
-                <p>Belum ada artikel dalam kategori ini.</p>
-              </div>
-            ) : (
-              <div className="blog-grid">
-                {articles.map((article) => (
-                  <article className="blog-card" key={article.id}>
-                    <div className="blog-card-image">
-                      {article.foto_cover && (
-                        <img
-                          src={`${import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN}${article.foto_cover}`}
-                          alt={article.judul}
-                          loading="lazy"
-                        />
-                      )}
-                    </div>
-                    <div className="blog-card-body">
-                      <div className="blog-card-meta">
-                        <span className="blog-card-date">
-                          {formatDate(article.dibuat_pada)}
-                        </span>
-                        <span className="blog-card-author">
-                          {article.nama_pembuat}
-                        </span>
+              ) : (
+                <div className="blog-grid">
+                  {articles.map((article) => (
+                    <article className="blog-card" key={article.id}>
+                      <div className="blog-card-image">
+                        {article.foto_cover && (
+                          <img
+                            src={`${apiUrl}${article.foto_cover}`}
+                            alt={article.judul}
+                            loading="lazy"
+                          />
+                        )}
                       </div>
-                      <h2 className="blog-card-title">{article.judul}</h2>
-                      <p className="blog-card-desc">{article.ringkasan}</p>
-                      <Link
-                        to={`/blog/${article.tautan}`}
-                        className="blog-card-link"
-                        onClick={() => window.scrollTo(0, 0)}
-                      >
-                        Baca Selengkapnya
-            </Link>
-                    </div>
-                  </article>
-          ))}
+                      <div className="blog-card-body">
+                        <div className="blog-card-meta">
+                          <span className="blog-card-date">
+                            {formatDate(article.dibuat_pada)}
+                          </span>
+                          <span className="blog-card-author">
+                            {article.nama_pembuat}
+                          </span>
+                        </div>
+                        <h2 className="blog-card-title">{article.judul}</h2>
+                        <p className="blog-card-desc">{article.ringkasan}</p>
+                        <Link
+                          to={`/blog/${article.tautan}`}
+                          className="blog-card-link"
+                          onClick={() => window.scrollTo(0, 0)}
+                        >
+                          Baca Selengkapnya
+                        </Link>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {!loading && !error && articles.length > 0 && (
+            <div className="blog-pagination">
+              <div className="pagination-info">
+                Halaman {currentPage} dari {totalPages}
               </div>
-            )}
-          </>
-        )}
-        </section>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-nav-button"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  aria-label="Halaman sebelumnya"
+                >
+                  «
+                </button>
+                <button
+                  className="pagination-page-button active"
+                  disabled
+                >
+                  {currentPage}
+                </button>
+                <button
+                  className="pagination-nav-button"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Halaman berikutnya"
+                >
+                  »
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <div style={{ height: "50px" }}></div>
     </main>
   );
 };
