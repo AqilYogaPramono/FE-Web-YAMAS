@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./DetailPengumuman.css";
 
 function DetailPengumuman() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [pengumuman, setPengumuman] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,8 +69,75 @@ function DetailPengumuman() {
     return `${tanggalFormatted}, ${waktuFormatted}`;
   };
 
+  const pageTitle = pengumuman 
+    ? `${pengumuman.judul || "Pengumuman"} - Perpustakaan Medayu Agung Surabaya`
+    : "Pengumuman - Perpustakaan Medayu Agung Surabaya";
+  
+  const getPlainText = (html) => {
+    if (!html) return "";
+    const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    return text.trim();
+  };
+  
+  const pageDescription = pengumuman?.isi
+    ? (() => {
+        const plainText = getPlainText(pengumuman.isi);
+        return plainText.length > 160 ? plainText.substring(0, 160).trim() + '...' : plainText;
+      })()
+    : "Baca pengumuman lengkap dari Perpustakaan Medayu Agung Surabaya. Informasi terbaru tentang kegiatan, acara, dan berita penting dari perpustakaan.";
+  
+  const ogImage = pengumuman?.foto
+    ? `${apiUrl}/images/pengumuman/${pengumuman.foto}`
+    : `${window.location.origin}/src/assets/logo_medayuagung_warna.webp`;
+  
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+
   return (
-    <main className="detail-pengumuman-main">
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta
+          name="description"
+          content={pageDescription}
+        />
+        <meta
+          name="keywords"
+          content={`${pengumuman?.judul || "pengumuman"}, perpustakaan medayu agung, perpustakaan surabaya, berita perpustakaan, informasi perpustakaan`}
+        />
+        
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:title" content={pengumuman?.judul || "Pengumuman Perpustakaan Medayu Agung Surabaya"} />
+        <meta
+          property="og:description"
+          content={pageDescription}
+        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={pengumuman?.judul || "Pengumuman Perpustakaan Medayu Agung Surabaya"} />
+        <meta property="og:locale" content="id_ID" />
+        <meta property="og:site_name" content="Perpustakaan Medayu Agung Surabaya" />
+        {pengumuman?.dibuat_pada && (
+          <meta property="article:published_time" content={new Date(pengumuman.dibuat_pada).toISOString()} />
+        )}
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta name="twitter:title" content={pengumuman?.judul || "Pengumuman Perpustakaan Medayu Agung Surabaya"} />
+        <meta
+          name="twitter:description"
+          content={pageDescription}
+        />
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content={pengumuman?.judul || "Pengumuman Perpustakaan Medayu Agung Surabaya"} />
+        
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+      
+      <main className="detail-pengumuman-main">
       <div className="detail-pengumuman-header">
         <button className="pengumuman-detail-back-button" onClick={() => navigate("/pengumuman")}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -146,6 +215,7 @@ function DetailPengumuman() {
 
       <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 }
 

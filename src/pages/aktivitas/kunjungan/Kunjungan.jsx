@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./Kunjungan.css";
+import DefaultOgImage from "../../../assets/logo_medayuagung_warna.webp";
 
 function Kunjungan() {
   const [kunjungan, setKunjungan] = useState([]);
@@ -12,6 +14,7 @@ function Kunjungan() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
   const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
 
   useEffect(() => {
@@ -131,11 +134,70 @@ function Kunjungan() {
     }
   };
 
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+  const ogImage =
+    kunjungan.length > 0 && kunjungan[0]?.cover
+      ? `${apiUrl}/images/kunjungan/${kunjungan[0].cover}`
+      : DefaultOgImage;
+
   return (
-    <main className="kunjungan-main">
-      <div className="kunjungan-header">
-        <h1 className="kunjungan-title">Kunjungan</h1>
-      </div>
+    <>
+      <Helmet>
+        <title>Kunjungan Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Informasi kunjungan ke Perpustakaan Medayu Agung Surabaya dari instansi, lembaga pendidikan, dan organisasi. Lihat dokumentasi kegiatan, agenda, serta detail kunjungan."
+        />
+        <meta
+          name="keywords"
+          content="kunjungan perpustakaan medayu agung, kunjungan perpustakaan surabaya, kunjungan instansi, kunjungan universitas, kunjungan organisasi, dokumentasi kunjungan, kegiatan perpustakaan"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={currentUrl} />
+        <meta
+          property="og:title"
+          content="Kunjungan Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          property="og:description"
+          content="Informasi kunjungan ke Perpustakaan Medayu Agung Surabaya dari instansi, lembaga pendidikan, dan organisasi. Lihat dokumentasi kegiatan, agenda, serta detail kunjungan."
+        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Kunjungan Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta property="og:locale" content="id_ID" />
+        <meta
+          property="og:site_name"
+          content="Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta
+          name="twitter:title"
+          content="Kunjungan Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          name="twitter:description"
+          content="Informasi kunjungan ke Perpustakaan Medayu Agung Surabaya dari instansi, lembaga pendidikan, dan organisasi. Lihat dokumentasi kegiatan, agenda, serta detail kunjungan."
+        />
+        <meta name="twitter:image" content={ogImage} />
+        <meta
+          name="twitter:image:alt"
+          content="Kunjungan Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+
+      <main className="kunjungan-main">
+        <div className="kunjungan-header">
+          <h1 className="kunjungan-title">Kunjungan</h1>
+        </div>
 
       <section className="kunjungan-section">
         <div className="kunjungan-container">
@@ -276,7 +338,8 @@ function Kunjungan() {
       </section>
 
       <div style={{ height: "50px" }}></div>
-    </main>
+      </main>
+    </>
   );
 }
 

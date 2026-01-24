@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./Magang.css";
+import DefaultOgImage from "../../../assets/logo_medayuagung_warna.webp";
 
 function Magang() {
   const [magang, setMagang] = useState([]);
@@ -12,6 +14,7 @@ function Magang() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
   const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
 
   useEffect(() => {
@@ -132,11 +135,70 @@ function Magang() {
     }
   };
 
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+  const ogImage =
+    magang.length > 0 && magang[0]?.cover
+      ? `${apiUrl}/images/magang/${magang[0].cover}`
+      : DefaultOgImage;
+
   return (
-    <main className="magang-main">
-      <div className="magang-header">
-        <h1 className="magang-title">Program Magang</h1>
-      </div>
+    <>
+      <Helmet>
+        <title>Program Magang Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Program magang Perpustakaan Medayu Agung Surabaya untuk mahasiswa dan pemuda. Dapatkan pengalaman pengelolaan koleksi, preservasi dokumen sejarah, dan pelayanan pengunjung."
+        />
+        <meta
+          name="keywords"
+          content="magang perpustakaan medayu agung, program magang surabaya, magang perpustakaan, magang arsip, magang sejarah, preservasi dokumen, pengelolaan koleksi perpustakaan"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={currentUrl} />
+        <meta
+          property="og:title"
+          content="Program Magang Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          property="og:description"
+          content="Program magang Perpustakaan Medayu Agung Surabaya untuk mahasiswa dan pemuda. Dapatkan pengalaman pengelolaan koleksi, preservasi dokumen sejarah, dan pelayanan pengunjung."
+        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Program Magang Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta property="og:locale" content="id_ID" />
+        <meta
+          property="og:site_name"
+          content="Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta
+          name="twitter:title"
+          content="Program Magang Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          name="twitter:description"
+          content="Program magang Perpustakaan Medayu Agung Surabaya untuk mahasiswa dan pemuda. Dapatkan pengalaman pengelolaan koleksi, preservasi dokumen sejarah, dan pelayanan pengunjung."
+        />
+        <meta name="twitter:image" content={ogImage} />
+        <meta
+          name="twitter:image:alt"
+          content="Program Magang Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+
+      <main className="magang-main">
+        <div className="magang-header">
+          <h1 className="magang-title">Program Magang</h1>
+        </div>
 
       <section className="magang-section">
         <div className="magang-container">
@@ -277,7 +339,8 @@ function Magang() {
       </section>
 
       <div style={{ height: "50px" }}></div>
-    </main>
+      </main>
+    </>
   );
 }
 

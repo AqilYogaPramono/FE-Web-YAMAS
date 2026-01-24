@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import "./Pengawas.css";
 
 const Pengawas = () => {
+  const location = useLocation();
   const [pengawasList, setPengawasList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +39,39 @@ const Pengawas = () => {
   }, []);
 
   return (
-    <main className="pengawas-main">
+    <>
+      <Helmet>
+        <title>Profil Pengawas Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Daftar pengawas Perpustakaan Medayu Agung Surabaya."
+        />
+        <meta
+          name="keywords"
+          content="pengawas perpustakaan medayu agung, profil pengawas, perpustakaan surabaya, yayasan medayu agung"
+        />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Profil Pengawas Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          property="og:description"
+          content="Daftar pengawas Perpustakaan Medayu Agung Surabaya."
+        />
+        <meta property="og:locale" content="id_ID" />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Profil Pengawas Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          name="twitter:description"
+          content="Daftar pengawas Perpustakaan Medayu Agung Surabaya."
+        />
+        
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={`${window.location.origin}${location.pathname}`} />
+      </Helmet>
+      
+      <main className="pengawas-main">
       <div className="pengawas-header">
         <h1 className="pengawas-title">Pengawas</h1>
       </div>
@@ -96,6 +131,7 @@ const Pengawas = () => {
 
       <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 };
 

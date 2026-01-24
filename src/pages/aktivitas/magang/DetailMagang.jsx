@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./DetailMagang.css";
+import DefaultOgImage from "../../../assets/logo_medayuagung_warna.webp";
 
 function DetailMagang() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [magang, setMagang] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,16 +80,98 @@ function DetailMagang() {
     return `${mulaiStr} - ${berakhirStr}`;
   };
 
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+  const getPlainText = (html) => {
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+  };
+
+  const pageTitle = magang
+    ? `${magang.judul || "Program Magang"} - Perpustakaan Medayu Agung Surabaya`
+    : "Detail Program Magang - Perpustakaan Medayu Agung Surabaya";
+
+  const pageDescription = magang?.deskripsi_tugas
+    ? (() => {
+        const plain = getPlainText(magang.deskripsi_tugas);
+        return plain.length > 160 ? `${plain.slice(0, 160).trim()}...` : plain;
+      })()
+    : "Detail program magang Perpustakaan Medayu Agung Surabaya. Informasi tugas, periode, dan dokumentasi kegiatan magang.";
+
+  const ogImage =
+    magang?.foto?.length > 0
+      ? `${apiUrl}/images/magang/${magang.foto[0]}`
+      : magang?.cover
+        ? `${apiUrl}/images/magang/${magang.cover}`
+        : DefaultOgImage;
+
   return (
-    <main className="detail-magang-main">
-      <div className="detail-magang-header">
-        <button className="magang-detail-back-button" onClick={() => navigate("/magang")}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span>Kembali</span>
-        </button>
-      </div>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta
+          name="keywords"
+          content={`${magang?.judul || "program magang"}, magang perpustakaan medayu agung, magang perpustakaan surabaya, magang arsip, magang sejarah, preservasi dokumen`}
+        />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={currentUrl} />
+        <meta
+          property="og:title"
+          content={magang?.judul || "Program Magang Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content={magang?.judul || "Program Magang Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta property="og:locale" content="id_ID" />
+        <meta
+          property="og:site_name"
+          content="Perpustakaan Medayu Agung Surabaya"
+        />
+        {magang?.periode_mulai && (
+          <meta
+            property="article:published_time"
+            content={new Date(magang.periode_mulai).toISOString()}
+          />
+        )}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta
+          name="twitter:title"
+          content={magang?.judul || "Program Magang Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={ogImage} />
+        <meta
+          name="twitter:image:alt"
+          content={magang?.judul || "Program Magang Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+
+      <main className="detail-magang-main">
+        <div className="detail-magang-header">
+          <button className="magang-detail-back-button" onClick={() => navigate("/magang")}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Kembali</span>
+          </button>
+        </div>
 
       <section className="detail-magang-section">
         {loading && (
@@ -179,7 +264,8 @@ function DetailMagang() {
       </section>
 
       <div style={{ height: "50px" }}></div>
-    </main>
+      </main>
+    </>
   );
 }
 

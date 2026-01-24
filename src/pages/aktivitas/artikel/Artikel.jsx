@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./Artikel.css";
+import DefaultOgImage from "../../../assets/logo_medayuagung_warna.webp";
 
 const ArtikelPage = () => {
   const [articles, setArticles] = useState([]);
@@ -12,6 +13,7 @@ const ArtikelPage = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const location = useLocation();
   const apiUrl = import.meta.env.VITE_API_BLOG;
 
   useEffect(() => {
@@ -125,8 +127,67 @@ const ArtikelPage = () => {
     }
   };
 
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+  const ogImage =
+    articles.length > 0 && articles[0]?.foto_cover
+      ? `${apiUrl}${articles[0].foto_cover}`
+      : DefaultOgImage;
+
   return (
-    <main className="blog-main">
+    <>
+      <Helmet>
+        <title>Blog Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Baca blog terbaru dari Perpustakaan Medayu Agung Surabaya. Informasi tentang sejarah, budaya, koleksi perpustakaan, dan berbagai topik menarik lainnya."
+        />
+        <meta
+          name="keywords"
+          content="blog perpustakaan medayu agung, perpustakaan surabaya, blog sejarah, blog budaya, blog sejarah indonesia, blog perpustakaan"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={currentUrl} />
+        <meta
+          property="og:title"
+          content="Blog Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          property="og:description"
+          content="Baca blog terbaru dari Perpustakaan Medayu Agung Surabaya. Informasi tentang sejarah, budaya, koleksi perpustakaan, dan berbagai topik menarik lainnya."
+        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Blog Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta property="og:locale" content="id_ID" />
+        <meta
+          property="og:site_name"
+          content="Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta
+          name="twitter:title"
+          content="Blog Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta
+          name="twitter:description"
+          content="Baca dan blog terbaru dari Perpustakaan Medayu Agung Surabaya. Informasi tentang sejarah, budaya, koleksi perpustakaan, dan berbagai topik menarik lainnya."
+        />
+        <meta name="twitter:image" content={ogImage} />
+        <meta
+          name="twitter:image:alt"
+          content="Blog Perpustakaan Medayu Agung Surabaya"
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+
+      <main className="blog-main">
       <div className="blog-header">
         <h1 className="blog-title">Blog</h1>
       </div>
@@ -280,6 +341,7 @@ const ArtikelPage = () => {
 
       <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 };
 

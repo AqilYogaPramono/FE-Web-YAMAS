@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./Pengumuman.css";
 
 function Pengumuman() {
@@ -12,6 +13,7 @@ function Pengumuman() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
   const apiUrl = import.meta.env.VITE_API_PENGELOAAN_KONTEN;
 
   useEffect(() => {
@@ -143,11 +145,58 @@ function Pengumuman() {
     }
   };
 
+  const ogImage = pengumuman.length > 0 && pengumuman[0]?.foto
+    ? `${apiUrl}/images/pengumuman/${pengumuman[0].foto}`
+    : `${window.location.origin}/src/assets/logo_medayuagung_warna.webp`;
+  
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+
   return (
-    <main className="pengumuman-main">
-      <div className="pengumuman-header">
-        <h1 className="pengumuman-title">Pengumuman</h1>
-      </div>
+    <>
+      <Helmet>
+        <title>Pengumuman Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Halaman pengumuman resmi Perpustakaan Medayu Agung Surabaya. Dapatkan informasi terbaru tentang kegiatan, acara, dan berita penting dari perpustakaan."
+        />
+        <meta
+          name="keywords"
+          content="pengumuman perpustakaan medayu agung, pengumuman perpustakaan surabaya, berita perpustakaan, informasi perpustakaan, kegiatan perpustakaan, acara perpustakaan"
+        />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:title" content="Pengumuman Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          property="og:description"
+          content="Halaman pengumuman resmi Perpustakaan Medayu Agung Surabaya. Dapatkan informasi terbaru tentang kegiatan, acara, dan berita penting dari perpustakaan."
+        />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Pengumuman Perpustakaan Medayu Agung Surabaya" />
+        <meta property="og:locale" content="id_ID" />
+        <meta property="og:site_name" content="Perpustakaan Medayu Agung Surabaya" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta name="twitter:title" content="Pengumuman Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          name="twitter:description"
+          content="Halaman pengumuman resmi Perpustakaan Medayu Agung Surabaya. Dapatkan informasi terbaru tentang kegiatan, acara, dan berita penting dari perpustakaan."
+        />
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content="Pengumuman Perpustakaan Medayu Agung Surabaya" />
+        
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
+      
+      <main className="pengumuman-main">
+        <div className="pengumuman-header">
+          <h1 className="pengumuman-title">Pengumuman</h1>
+        </div>
 
       <section className="pengumuman-section">
         <div className="pengumuman-container">
@@ -305,6 +354,7 @@ function Pengumuman() {
 
       <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 }
 

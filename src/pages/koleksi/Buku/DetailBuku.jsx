@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './DetailBuku.css';
+import DefaultOgImage from '../../../assets/logo_medayuagung_warna.webp';
 
 function DetailBuku() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
     
     const [buku, setBuku] = useState(null);
@@ -53,9 +56,30 @@ function DetailBuku() {
         return null;
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+    const pageTitle = buku
+        ? `${buku.judul || "Buku"} - Perpustakaan Medayu Agung Surabaya`
+        : "Detail Buku - Perpustakaan Medayu Agung Surabaya";
+    
+    const pageDescription = buku?.sinopsis
+        ? buku.sinopsis.length > 160
+            ? `${buku.sinopsis.substring(0, 160).trim()}...`
+            : buku.sinopsis
+        : buku?.judul
+            ? `Detail buku ${buku.judul} dari koleksi Perpustakaan Medayu Agung Surabaya. ${buku.pengarang ? `Ditulis oleh ${buku.pengarang}.` : ""} ${buku.penerbit ? `Diterbitkan oleh ${buku.penerbit}.` : ""}`
+            : "Detail buku dari koleksi Perpustakaan Medayu Agung Surabaya. Informasi lengkap tentang judul, pengarang, penerbit, dan ketersediaan buku.";
+
+    const ogImage = buku?.foto_cover
+        ? `${apiUrl}/images/buku/${buku.foto_cover}`
+        : DefaultOgImage;
+
     if (loading) {
         return (
-            <main className="buku-detail-main">
+            <>
+                <Helmet>
+                    <title>Memuat Detail Buku - Perpustakaan Medayu Agung Surabaya</title>
+                </Helmet>
+                <main className="buku-detail-main">
                 <section className="buku-detail-section">
                     <div className="buku-detail-skeleton">
                         <div className="buku-detail-skeleton-header" />
@@ -66,12 +90,17 @@ function DetailBuku() {
                     </div>
                 </section>
             </main>
+            </>
         );
     }
 
     if (error || !buku) {
         return (
-            <main className="buku-detail-main">
+            <>
+                <Helmet>
+                    <title>Buku Tidak Ditemukan - Perpustakaan Medayu Agung Surabaya</title>
+                </Helmet>
+                <main className="buku-detail-main">
                 <section className="buku-detail-section">
                     <div className="buku-detail-state buku-detail-state-error">
                         <p>{error || 'Data buku tidak ditemukan'}</p>
@@ -84,11 +113,65 @@ function DetailBuku() {
                     </div>
                 </section>
             </main>
+            </>
         );
     }
 
     return (
-        <main className="buku-detail-main">
+        <>
+            <Helmet>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <meta
+                    name="keywords"
+                    content={`${buku?.judul || "buku"}, ${buku?.pengarang || ""}, ${buku?.penerbit || ""}, ${buku?.nama_kategori || ""}, koleksi buku perpustakaan medayu agung, buku perpustakaan surabaya, katalog buku`}
+                />
+                <meta property="og:type" content="book" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content={buku?.judul || "Detail Buku - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta
+                    property="og:image:alt"
+                    content={buku?.judul || "Detail Buku - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                {buku?.pengarang && (
+                    <meta property="book:author" content={buku.pengarang} />
+                )}
+                {buku?.isbn_issn && (
+                    <meta property="book:isbn" content={buku.isbn_issn} />
+                )}
+                {buku?.tahun_terbit && (
+                    <meta property="book:release_date" content={buku.tahun_terbit.toString()} />
+                )}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content={buku?.judul || "Detail Buku - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={ogImage} />
+                <meta
+                    name="twitter:image:alt"
+                    content={buku?.judul || "Detail Buku - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
+
+            <main className="buku-detail-main">
             <section className="buku-detail-section">
                 <button className="buku-detail-back-button" onClick={handleBack}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -211,6 +294,7 @@ function DetailBuku() {
                 </article>
             </section>
         </main>
+        </>
     );
 }
 

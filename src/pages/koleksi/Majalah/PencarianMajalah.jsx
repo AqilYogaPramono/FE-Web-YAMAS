@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianMajalah.css';
 
 const TAHUN_OPTIONS = [];
@@ -11,6 +12,7 @@ TAHUN_OPTIONS.reverse();
 
 function PencarianMajalah() {
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
+    const location = useLocation();
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mainKeyword, setMainKeyword] = useState('');
@@ -231,8 +233,49 @@ function PencarianMajalah() {
         return 'https://via.placeholder.com/200x260/e0e0e0/999999?text=Tidak+Ada+Gambar';
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+
     return (
         <>
+            <Helmet>
+                <title>E-Katalog Majalah - Koleksi Majalah Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="e-katalog majalah, pencarian majalah, koleksi majalah perpustakaan medayu agung, katalog majalah surabaya, pencarian majalah perpustakaan, katalog online perpustakaan, koleksi majalah"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="E-Katalog Majalah - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="E-Katalog Majalah - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-majalah-search">
                 <div className="container">
                     <div className="hero-majalah-content">

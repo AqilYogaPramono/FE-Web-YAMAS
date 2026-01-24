@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianKoran.css';
 
 const BULAN_OPTIONS = [
@@ -14,6 +16,7 @@ for (let year = 1950; year <= currentYear; year++) {
 TAHUN_OPTIONS.reverse();
 
 function PencarianKoran() {
+    const location = useLocation();
     const [penerbitKoran, setPenerbitKoran] = useState([]);
     const [koleksiTerbaru, setKoleksiTerbaru] = useState([]);
     const [idPenerbitKoran, setIdPenerbitKoran] = useState('');
@@ -163,8 +166,49 @@ function PencarianKoran() {
         return penerbit?.nama_penerbit || 'Tidak diketahui';
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+
     return (
         <>
+            <Helmet>
+                <title>Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="pencarian koran, koleksi koran perpustakaan medayu agung, katalog koran surabaya, pencarian koran perpustakaan, katalog online perpustakaan, koleksi koran lama, arsip koran"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-koran-search">
                 <div className="container">
                     <div className="hero-koran-content">
