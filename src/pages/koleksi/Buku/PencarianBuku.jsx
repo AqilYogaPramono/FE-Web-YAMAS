@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianBuku.css';
 
 const TAHUN_OPTIONS = [];
@@ -11,6 +12,7 @@ TAHUN_OPTIONS.reverse();
 
 function PencarianBuku() {
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
+    const location = useLocation();
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mainKeyword, setMainKeyword] = useState('');
@@ -29,27 +31,43 @@ function PencarianBuku() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
+            return;
+        }
         fetchNewBooks();
         fetchBahasa();
         fetchKategori();
-    }, []);
+    }, [apiUrl]);
 
     const fetchNewBooks = async () => {
         try {
+            if (!apiUrl) {
+                setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/new-buku`);
             if (response.ok) {
                 const data = await response.json();
                 setNewBooks(data?.data || []);
+                setFetchError(null);
+            } else {
+                setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
+            setFetchError('Gagal memuat data buku. Silakan coba lagi nanti.');
         }
     };
 
     const fetchBahasa = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/bahasa`);
             if (response.ok) {
                 const data = await response.json();
@@ -62,6 +80,9 @@ function PencarianBuku() {
 
     const fetchKategori = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/kategori`);
             if (response.ok) {
                 const data = await response.json();
@@ -86,6 +107,7 @@ function PencarianBuku() {
         setSearchResults([]);
         setHasSearched(false);
         setError(null);
+        setFetchError(null);
     };
 
     const handleClearAdvance = () => {
@@ -107,6 +129,11 @@ function PencarianBuku() {
         setError(null);
         
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/buku/search`, {
                 method: 'POST',
                 headers: {
@@ -121,12 +148,12 @@ function PencarianBuku() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data buku. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -162,6 +189,11 @@ function PencarianBuku() {
         setIsModalOpen(false);
 
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/buku/advance-search`, {
                 method: 'POST',
                 headers: {
@@ -176,12 +208,12 @@ function PencarianBuku() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data buku. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data buku. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -201,8 +233,49 @@ function PencarianBuku() {
         return 'https://via.placeholder.com/200x260/e0e0e0/999999?text=Tidak+Ada+Gambar';
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+
     return (
         <>
+            <Helmet>
+                <title>E-Katalog Buku - Koleksi Buku Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi buku di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan buku dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, pengarang, penerbit, kategori, dan tahun terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="e-katalog buku, pencarian buku, koleksi buku perpustakaan medayu agung, katalog buku surabaya, pencarian buku perpustakaan, katalog online perpustakaan, koleksi pustaka"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="E-Katalog Buku - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi buku di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan buku dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, pengarang, penerbit, kategori, dan tahun terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="Pencarian Buku - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi buku di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan buku dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, pengarang, penerbit, kategori, dan tahun terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-buku-search">
                 <div className="container">
                     <div className="hero-buku-content">
@@ -357,12 +430,6 @@ function PencarianBuku() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="buku-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {hasSearched ? (
                         <div id="bukuResults">
                             <div className="results-header">
@@ -380,6 +447,13 @@ function PencarianBuku() {
                                 <div className="loading-state">
                                     <span className="material-symbols-rounded">hourglass_empty</span>
                                     <p>Memuat hasil pencarian...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="buku-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 <div className="buku-grid">
@@ -418,7 +492,14 @@ function PencarianBuku() {
                                 <h2 className="section-title">Buku Terbaru</h2>
                                 <p className="section-description">Jelajahi koleksi buku terbaru yang tersedia di perpustakaan kami</p>
                             </div>
-                            {newBooks.length > 0 ? (
+                            {fetchError ? (
+                                <div className="buku-empty buku-empty-error">
+                                    <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : newBooks.length > 0 ? (
                                 <div className="buku-grid">
                                     {newBooks.map((item) => (
                                         <Link

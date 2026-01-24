@@ -9,27 +9,47 @@
     --text-secondary: #64748b;
 }
 
-.koran-error,
-.koran-empty {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--text-secondary);
-}
-
-.koran-error {
-    background-color: #fee2e2;
-    border: 1px solid #fecaca;
-    border-radius: 12px;
-    color: var(--danger-color);
-    margin-bottom: 2rem;
-}
-
 .koran-empty {
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 3rem 2rem;
+    text-align: center;
+    color: var(--text-secondary);
 }
+
+.koran-empty-error {
+    background-color: #fee2e2;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.retry-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.75rem;
+}
+
+.retry-button:hover {
+    background-color: #0c729c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 142, 200, 0.3);
+}
+
 
 .koran-empty-not-found {
     background-color: #fee2e2;
@@ -40,6 +60,10 @@
     color: #dc3545;
     font-weight: 500;
     margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .koran-skeleton-section {
@@ -403,6 +427,32 @@
 
 .btn-hapus .material-symbols-rounded {
     font-size: 1.25rem;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.loading-state .material-symbols-rounded {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading-state p {
+    font-size: 1.2rem;
+    color: var(--dark-color);
 }
 
 .koran-results-wrapper {

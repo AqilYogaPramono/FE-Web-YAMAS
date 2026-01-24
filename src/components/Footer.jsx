@@ -93,7 +93,7 @@ const Footer = () => {
       </div>
 
       <div className="copyright-bar">
-        <p>Copyright © Perpustakaan Medayu Agung 2025</p>
+        <p>Copyright © Perpustakaan Medayu Agung 2026</p>
       </div>
     </footer>
   );

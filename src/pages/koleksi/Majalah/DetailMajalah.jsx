@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import './DetailMajalah.css'; 
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import './DetailMajalah.css';
+import DefaultOgImage from '../../../assets/logo_medayuagung_warna.webp'; 
 
 function DetailMajalah() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
     
     const [majalah, setMajalah] = useState(null);
@@ -53,9 +56,30 @@ function DetailMajalah() {
         return null;
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+    const pageTitle = majalah
+        ? `${majalah.judul || "Majalah"} - Perpustakaan Medayu Agung Surabaya`
+        : "Detail Majalah - Perpustakaan Medayu Agung Surabaya";
+    
+    const pageDescription = majalah?.sinopsis
+        ? majalah.sinopsis.length > 160
+            ? `${majalah.sinopsis.substring(0, 160).trim()}...`
+            : majalah.sinopsis
+        : majalah?.judul
+            ? `Detail majalah ${majalah.judul} dari koleksi Perpustakaan Medayu Agung Surabaya. ${majalah.edisi ? `Edisi ${majalah.edisi}.` : ""} ${majalah.penerbit ? `Diterbitkan oleh ${majalah.penerbit}.` : ""}`
+            : "Detail majalah dari koleksi Perpustakaan Medayu Agung Surabaya. Informasi lengkap tentang judul, edisi, penerbit, dan ketersediaan majalah.";
+
+    const ogImage = majalah?.foto_cover
+        ? `${apiUrl}/images/majalah/${majalah.foto_cover}`
+        : DefaultOgImage;
+
     if (loading) {
         return (
-            <main className="majalah-detail-main">
+            <>
+                <Helmet>
+                    <title>Memuat Detail Majalah - Perpustakaan Medayu Agung Surabaya</title>
+                </Helmet>
+                <main className="majalah-detail-main">
                 <section className="majalah-detail-section">
                     <div className="majalah-detail-skeleton">
                         <div className="majalah-detail-skeleton-header" />
@@ -66,12 +90,17 @@ function DetailMajalah() {
                     </div>
                 </section>
             </main>
+            </>
         );
     }
 
     if (error || !majalah) {
         return (
-            <main className="majalah-detail-main">
+            <>
+                <Helmet>
+                    <title>Majalah Tidak Ditemukan - Perpustakaan Medayu Agung Surabaya</title>
+                </Helmet>
+                <main className="majalah-detail-main">
                 <section className="majalah-detail-section">
                     <div className="majalah-detail-state majalah-detail-state-error">
                         <p>{error || 'Data majalah tidak ditemukan'}</p>
@@ -84,11 +113,59 @@ function DetailMajalah() {
                     </div>
                 </section>
             </main>
+            </>
         );
     }
 
     return (
-        <main className="majalah-detail-main">
+        <>
+            <Helmet>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <meta
+                    name="keywords"
+                    content={`${majalah?.judul || "majalah"}, ${majalah?.edisi || ""}, ${majalah?.penerbit || ""}, ${majalah?.nama_kategori || ""}, koleksi majalah perpustakaan medayu agung, majalah perpustakaan surabaya, katalog majalah`}
+                />
+                <meta property="og:type" content="article" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content={majalah?.judul || "Detail Majalah - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta
+                    property="og:image:alt"
+                    content={majalah?.judul || "Detail Majalah - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                {majalah?.tahun_terbit && (
+                    <meta property="article:published_time" content={new Date(majalah.tahun_terbit, 0, 1).toISOString()} />
+                )}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content={majalah?.judul || "Detail Majalah - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={ogImage} />
+                <meta
+                    name="twitter:image:alt"
+                    content={majalah?.judul || "Detail Majalah - Perpustakaan Medayu Agung Surabaya"}
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
+
+            <main className="majalah-detail-main">
             <section className="majalah-detail-section">
                 <button className="majalah-detail-back-button" onClick={handleBack}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -201,6 +278,7 @@ function DetailMajalah() {
                 </article>
             </section>
         </main>
+        </>
     );
 }
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-
-import "./DetailArtikel.css"; 
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import "./DetailArtikel.css";
+import DefaultOgImage from "../../../assets/logo_medayuagung_warna.webp"; 
 
 const DetailArtikel = () => {
   const { tautan } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,9 +46,60 @@ const DetailArtikel = () => {
     return date.toLocaleDateString('id-ID', options);
   };
 
+  const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+  const currentUrl = `${window.location.origin}${location.pathname}`;
+  
+  const getPlainText = (html) => {
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+  };
+
+  const pageTitle = blog
+    ? `${blog.judul || "Blog"} - Perpustakaan Medayu Agung Surabaya`
+    : "Detail Blog - Perpustakaan Medayu Agung Surabaya";
+
+  const pageDescription = blog?.ringkasan
+    ? blog.ringkasan.length > 160
+      ? `${blog.ringkasan.substring(0, 160).trim()}...`
+      : blog.ringkasan
+    : blog?.isi
+      ? (() => {
+          const plain = getPlainText(blog.isi);
+          return plain.length > 160 ? `${plain.slice(0, 160).trim()}...` : plain;
+        })()
+      : "Baca blog lengkap dari Perpustakaan Medayu Agung Surabaya. Informasi tentang sejarah, budaya, dan koleksi perpustakaan.";
+
+  const ogImage = blog?.foto_cover
+    ? `${apiUrl}${blog.foto_cover}`
+    : DefaultOgImage;
+
+  const backButton = (
+    <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      <span>Kembali</span>
+    </button>
+  );
+
   if (loading) {
-  return (
-      <main className="blog-detail-main">
+    return (
+      <>
+        <Helmet>
+          <title>Memuat Blog - Perpustakaan Medayu Agung Surabaya</title>
+        </Helmet>
+        <main className="blog-detail-main">
+        <div className="blog-detail-back-header">
+          {backButton}
+        </div>
         <section className="blog-detail-section">
           <div className="blog-detail-skeleton">
             <div className="blog-detail-skeleton-header" />
@@ -56,34 +109,110 @@ const DetailArtikel = () => {
             <div className="blog-detail-skeleton-content" />
           </div>
         </section>
+
+        <div style={{ height: "50px" }}></div>
       </main>
+      </>
     );
   }
 
   if (error || !blog) {
     return (
-      <main className="blog-detail-main">
+      <>
+        <Helmet>
+          <title>Blog Tidak Ditemukan - Perpustakaan Medayu Agung Surabaya</title>
+        </Helmet>
+        <main className="blog-detail-main">
+        <div className="blog-detail-back-header">
+          {backButton}
+        </div>
         <section className="blog-detail-section">
           <div className="blog-detail-state blog-detail-state-error">
             <p>{error || "Blog tidak ditemukan"}</p>
           </div>
         </section>
+
+        <div style={{ height: "50px" }}></div>
       </main>
+      </>
     );
   }
 
   return (
-    <main className="blog-detail-main">
-      <section className="blog-detail-section">
-        <button className="blog-detail-back-button" onClick={() => navigate("/blog")}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span>Kembali</span>
-        </button>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta
+          name="keywords"
+          content={`${blog?.judul || "blog"}, perpustakaan medayu agung, blog perpustakaan surabaya, blog sejarah, blog budaya, ${blog?.kategori?.map(k => k.nama_kategori).join(", ") || ""}, ${blog?.tag?.map(t => t.nama_tag).join(", ") || ""}`}
+        />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={currentUrl} />
+        <meta
+          property="og:title"
+          content={blog?.judul || "Blog Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content={blog?.judul || "Blog Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta property="og:locale" content="id_ID" />
+        <meta
+          property="og:site_name"
+          content="Perpustakaan Medayu Agung Surabaya"
+        />
+        {blog?.dibuat_pada && (
+          <meta
+            property="article:published_time"
+            content={new Date(blog.dibuat_pada).toISOString()}
+          />
+        )}
+        {blog?.kategori && blog.kategori.length > 0 && (
+          <meta
+            property="article:section"
+            content={blog.kategori.map(k => k.nama_kategori).join(", ")}
+          />
+        )}
+        {blog?.tag && blog.tag.length > 0 && (
+          <>
+            {blog.tag.map((tag, index) => (
+              <meta
+                key={index}
+                property="article:tag"
+                content={tag.nama_tag}
+              />
+            ))}
+          </>
+        )}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta
+          name="twitter:title"
+          content={blog?.judul || "Blog Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={ogImage} />
+        <meta
+          name="twitter:image:alt"
+          content={blog?.judul || "Blog Perpustakaan Medayu Agung Surabaya"}
+        />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content={blog?.nama_pembuat || "Perpustakaan Medayu Agung Surabaya"} />
+        <link rel="canonical" href={currentUrl} />
+      </Helmet>
 
+      <main className="blog-detail-main">
+      <div className="blog-detail-back-header">
+        {backButton}
+      </div>
+      <section className="blog-detail-section">
         <article className="blog-detail-container">
-          <div className="blog-detail-header">
+          <div className="blog-detail-article-header">
             <h1 className="blog-detail-title">{blog.judul}</h1>
 
             {blog.ringkasan && (
@@ -115,7 +244,7 @@ const DetailArtikel = () => {
               dangerouslySetInnerHTML={{
                 __html: blog.isi?.replace(
                   /src="\/images\//g,
-                  `src="${import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN}/images/`
+                  `src="${apiUrl}/images/`
                 ) || ''
               }}
             />
@@ -174,7 +303,7 @@ const DetailArtikel = () => {
                   {related.foto_cover && (
                     <div className="blog-detail-related-image">
                       <img
-                        src={`${import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN}${related.foto_cover}`}
+                        src={`${apiUrl}${related.foto_cover}`}
                         alt={related.judul}
                         loading="lazy"
                       />
@@ -192,7 +321,10 @@ const DetailArtikel = () => {
         </section>
         )}
       </section>
+
+      <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianMajalah.css';
 
 const TAHUN_OPTIONS = [];
@@ -11,6 +12,7 @@ TAHUN_OPTIONS.reverse();
 
 function PencarianMajalah() {
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
+    const location = useLocation();
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mainKeyword, setMainKeyword] = useState('');
@@ -29,27 +31,43 @@ function PencarianMajalah() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+            return;
+        }
         fetchNewMajalah();
         fetchBahasa();
         fetchKategori();
-    }, []);
+    }, [apiUrl]);
 
     const fetchNewMajalah = async () => {
         try {
+            if (!apiUrl) {
+                setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/new-majalah`);
             if (response.ok) {
                 const data = await response.json();
                 setNewMajalah(data?.data || []);
+                setFetchError(null);
+            } else {
+                setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
+            setFetchError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         }
     };
 
     const fetchBahasa = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/bahasa`);
             if (response.ok) {
                 const data = await response.json();
@@ -62,6 +80,9 @@ function PencarianMajalah() {
 
     const fetchKategori = async () => {
         try {
+            if (!apiUrl) {
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/kategori`);
             if (response.ok) {
                 const data = await response.json();
@@ -86,6 +107,7 @@ function PencarianMajalah() {
         setSearchResults([]);
         setHasSearched(false);
         setError(null);
+        setFetchError(null);
     };
 
     const handleClearAdvance = () => {
@@ -107,6 +129,11 @@ function PencarianMajalah() {
         setError(null);
         
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/majalah/search`, {
                 method: 'POST',
                 headers: {
@@ -121,12 +148,12 @@ function PencarianMajalah() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -162,6 +189,11 @@ function PencarianMajalah() {
         setIsModalOpen(false);
 
         try {
+            if (!apiUrl) {
+                setSearchResults([]);
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
+                return;
+            }
             const response = await fetch(`${apiUrl}/API/majalah/advance-search`, {
                 method: 'POST',
                 headers: {
@@ -176,12 +208,12 @@ function PencarianMajalah() {
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 setSearchResults([]);
-                setError(errorData.message || 'Gagal melakukan pencarian');
+                setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
             }
         } catch (err) {
             console.error(err);
             setSearchResults([]);
-            setError('Terjadi kesalahan saat melakukan pencarian');
+            setError('Gagal memuat data majalah. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
             setTimeout(() => {
@@ -201,8 +233,49 @@ function PencarianMajalah() {
         return 'https://via.placeholder.com/200x260/e0e0e0/999999?text=Tidak+Ada+Gambar';
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+
     return (
         <>
+            <Helmet>
+                <title>E-Katalog Majalah - Koleksi Majalah Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="e-katalog majalah, pencarian majalah, koleksi majalah perpustakaan medayu agung, katalog majalah surabaya, pencarian majalah perpustakaan, katalog online perpustakaan, koleksi majalah"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="E-Katalog Majalah - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="E-Katalog Majalah - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi majalah di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan majalah dengan pencarian sederhana atau pencarian spesifik berdasarkan judul, edisi, penerbit, kategori, dan tahun terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-majalah-search">
                 <div className="container">
                     <div className="hero-majalah-content">
@@ -357,12 +430,6 @@ function PencarianMajalah() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="majalah-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {hasSearched ? (
                         <div id="majalahResults">
                             <div className="results-header">
@@ -380,6 +447,13 @@ function PencarianMajalah() {
                                 <div className="loading-state">
                                     <span className="material-symbols-rounded">hourglass_empty</span>
                                     <p>Memuat hasil pencarian...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="majalah-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 <div className="majalah-grid">
@@ -418,7 +492,14 @@ function PencarianMajalah() {
                                 <h2 className="section-title">Majalah Terbaru</h2>
                                 <p className="section-description">Jelajahi koleksi majalah terbaru yang tersedia di perpustakaan kami</p>
                             </div>
-                            {newMajalah.length > 0 ? (
+                            {fetchError ? (
+                                <div className="majalah-empty majalah-empty-error">
+                                    <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : newMajalah.length > 0 ? (
                                 <div className="majalah-grid">
                                     {newMajalah.map((item) => (
                                         <Link

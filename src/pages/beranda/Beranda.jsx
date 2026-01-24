@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import "./Beranda.css";
 import SliderImage from "../../assets/slider.webp";
 import Slide1 from "../../assets/1.webp";
@@ -256,7 +257,39 @@ function Beranda() {
   }, [isDragging]);
 
   return (
-    <main>
+    <>
+      <Helmet>
+        <title>Perpustakaan Medayu Agung Surabaya Koleksi Koran Lama, Kliping Koran, Majalah Lama, Buku Langka dan Arsip Sejarah</title>
+        <meta
+          name="description"
+          content="Perpustakaan Medayu Agung di Surabaya menyimpan koleksi buku langka, koran lama, majalah lama, dan arsip sejarah Indonesia. Terletak di Jalan Medayu Selatan, perpustakaan ini buka setiap hari Senin-Sabtu dan terbuka untuk umum."
+        />
+        <meta
+          name="keywords"
+          content="perpustakaan medayu agung, perpustakaan surabaya, buku langka, koran lama, majalah lama, arsip sejarah indonesia, kliping koran, koleksi sejarah"
+        />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Perpustakaan Medayu Agung Surabaya - Koleksi Langka & Arsip Sejarah" />
+        <meta
+          property="og:description"
+          content="Perpustakaan Medayu Agung di Surabaya menyimpan koleksi buku langka, koran lama, majalah lama, dan arsip sejarah Indonesia. Terletak di Jalan Medayu Selatan, perpustakaan ini buka setiap hari Senin-Sabtu dan terbuka untuk umum."
+        />
+        <meta property="og:locale" content="id_ID" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Perpustakaan Medayu Agung Surabaya - Koleksi Buku Langka & Arsip Sejarah" />
+        <meta
+          name="twitter:description"
+          content="Perpustakaan Medayu Agung di Surabaya menyimpan koleksi buku langka, koran lama, majalah lama, dan arsip sejarah Indonesia."
+        />
+        
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={window.location.origin} />
+      </Helmet>
+      
+      <main>
       <section 
         className="hero-slider"
         ref={sliderRef}
@@ -380,6 +413,7 @@ function Beranda() {
       </section>
 
     </main>
+    </>
   );
 }
 

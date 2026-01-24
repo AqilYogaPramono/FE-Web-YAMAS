@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import "./Pembina.css";
 
 const Pembina = () => {
+  const location = useLocation();
   const [pembinaList, setPembinaList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +39,38 @@ const Pembina = () => {
   }, []);
 
   return (
-    <main className="pembina-main">
+    <>
+      <Helmet>
+        <title>Profil Pembina Perpustakaan Medayu Agung Surabaya</title>
+        <meta
+          name="description"
+          content="Daftar pembina Perpustakaan Medayu Agung Surabaya."
+        />
+        <meta
+          name="keywords"
+          content="pembina perpustakaan medayu agung, profil pembina, perpustakaan surabaya, yayasan medayu agung"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Profil Pembina Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          property="og:description"
+          content="Daftar pembina Perpustakaan Medayu Agung Surabaya."
+        />
+        <meta property="og:locale" content="id_ID" />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Profil Pembina Perpustakaan Medayu Agung Surabaya" />
+        <meta
+          name="twitter:description"
+          content="Daftar pembina Perpustakaan Medayu Agung Surabaya."
+        />
+        
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+        <link rel="canonical" href={`${window.location.origin}${location.pathname}`} />
+      </Helmet>
+      
+      <main className="pembina-main">
       <div className="pembina-header">
         <h1 className="pembina-title">Pembina</h1>
       </div>
@@ -96,6 +130,7 @@ const Pembina = () => {
 
       <div style={{ height: "50px" }}></div>
     </main>
+    </>
   );
 };
 

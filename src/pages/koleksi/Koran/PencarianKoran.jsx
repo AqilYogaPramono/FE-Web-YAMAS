@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianKoran.css';
 
 const BULAN_OPTIONS = [
@@ -14,6 +16,7 @@ for (let year = 1950; year <= currentYear; year++) {
 TAHUN_OPTIONS.reverse();
 
 function PencarianKoran() {
+    const location = useLocation();
     const [penerbitKoran, setPenerbitKoran] = useState([]);
     const [koleksiTerbaru, setKoleksiTerbaru] = useState([]);
     const [idPenerbitKoran, setIdPenerbitKoran] = useState('');
@@ -29,12 +32,12 @@ function PencarianKoran() {
     const apiUrl = import.meta.env.VITE_API_E_KATALOG;
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            return;
+        }
         const fetchPenerbit = async () => {
             try {
-                if (!apiUrl) {
-                    return;
-                }
-
                 const response = await fetch(`${apiUrl}/API/penerbit-koran`);
                 if (!response.ok) {
                     return;
@@ -56,18 +59,19 @@ function PencarianKoran() {
     }, [apiUrl]);
 
     useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            setLoading(false);
+            return;
+        }
         const fetchKoleksi = async () => {
             try {
                 setLoading(true);
                 setFetchError(null);
 
-                if (!apiUrl) {
-                    setLoading(false);
-                    return;
-                }
-
                 const response = await fetch(`${apiUrl}/API/new-koran`);
                 if (!response.ok) {
+                    setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
                     setLoading(false);
                     return;
                 }
@@ -77,7 +81,7 @@ function PencarianKoran() {
                 setKoleksiTerbaru(koleksi.slice(0, 6));
             } catch (err) {
                 console.error(err);
-                setFetchError('Gagal memuat data koleksi koran');
+                setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
             } finally {
                 setLoading(false);
             }
@@ -99,7 +103,10 @@ function PencarianKoran() {
             setError(null);
 
             if (!apiUrl) {
-                throw new Error('URL API tidak dikonfigurasi');
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
             }
 
             const response = await fetch(`${apiUrl}/API/koran/search`, {
@@ -115,7 +122,10 @@ function PencarianKoran() {
             });
 
             if (!response.ok) {
-                throw new Error('Gagal melakukan pencarian koran');
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
             }
 
             const data = await response.json();
@@ -131,11 +141,9 @@ function PencarianKoran() {
             }, 100);
         } catch (err) {
             console.error(err);
-            if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                setError('Gagal terhubung ke server. Silakan coba lagi.');
-            } else {
-                setError(err.message || 'Terjadi kesalahan saat melakukan pencarian');
-            }
+            setShowResults(false);
+            setResults([]);
+            setError('Gagal memuat data koran. Silakan coba lagi nanti.');
         } finally {
             setSearchLoading(false);
         }
@@ -149,6 +157,7 @@ function PencarianKoran() {
         setShowResults(false);
         setResults([]);
         setError(null);
+        setFetchError(null);
     };
 
     const getPenerbitName = (id) => {
@@ -157,8 +166,49 @@ function PencarianKoran() {
         return penerbit?.nama_penerbit || 'Tidak diketahui';
     };
 
+    const currentUrl = `${window.location.origin}${location.pathname}`;
+
     return (
         <>
+            <Helmet>
+                <title>Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="pencarian koran, koleksi koran perpustakaan medayu agung, katalog koran surabaya, pencarian koran perpustakaan, katalog online perpustakaan, koleksi koran lama, arsip koran"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-koran-search">
                 <div className="container">
                     <div className="hero-koran-content">
@@ -230,12 +280,6 @@ function PencarianKoran() {
 
             <main className="page-content">
                 <div className="container">
-                    {error && (
-                        <div className="koran-error">
-                            <p>{error}</p>
-                        </div>
-                    )}
-
                     {loading && (
                         <div className="koran-skeleton-section">
                             <div className="koran-skeleton-title"></div>
@@ -248,42 +292,43 @@ function PencarianKoran() {
                     )}
 
                     {!loading && !showResults && (
-                        <>
+                        <div id="koranTerbaru">
+                            <div className="section-header">
+                                <h2 className="section-title">Koleksi Koran Terbaru</h2>
+                                <p className="section-description">Jelajahi koleksi koran terbaru yang tersedia di perpustakaan kami</p>
+                            </div>
                             {fetchError ? (
-                                <div className="koran-error">
+                                <div className="koran-empty koran-empty-error">
                                     <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             ) : koleksiTerbaru.length > 0 ? (
-                                <div id="koranTerbaru">
-                                    <div className="section-header">
-                                        <h2 className="section-title">Koleksi Koran Terbaru</h2>
-                                        <p className="section-description">Jelajahi koleksi koran terbaru yang tersedia di perpustakaan kami</p>
-                                    </div>
-                                    <div className="koran-grid">
-                                        {koleksiTerbaru.map((koran) => (
-                                            <div className="koran-card" key={koran.id}>
-                                                <div className="koran-image-wrapper">
-                                                    {koran.foto && (
-                                                        <img 
-                                                            src={`${apiUrl}/images/penerbit-koran/${koran.foto}`}
-                                                            alt={koran.nama_penerbit}
-                                                            loading="lazy"
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div className="koran-info">
-                                                    <h3>{koran.nama_penerbit}</h3>
-                                                </div>
+                                <div className="koran-grid">
+                                    {koleksiTerbaru.map((koran) => (
+                                        <div className="koran-card" key={koran.id}>
+                                            <div className="koran-image-wrapper">
+                                                {koran.foto && (
+                                                    <img 
+                                                        src={`${apiUrl}/images/penerbit-koran/${koran.foto}`}
+                                                        alt={koran.nama_penerbit}
+                                                        loading="lazy"
+                                                    />
+                                                )}
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="koran-info">
+                                                <h3>{koran.nama_penerbit}</h3>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
                                 <div className="koran-empty">
                                     <p>Belum ada koleksi koran yang tersedia.</p>
                                 </div>
                             )}
-                        </>
+                        </div>
                     )}
                     
                     {!loading && showResults && (
@@ -299,11 +344,19 @@ function PencarianKoran() {
                                 </button>
                             </div>
                             
-                            {results.length === 0 ? (
-                                <div className="koran-empty-not-found">
-                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
+                            {searchLoading ? (
+                                <div className="loading-state">
+                                    <span className="material-symbols-rounded">hourglass_empty</span>
+                                    <p>Memuat hasil pencarian...</p>
                                 </div>
-                            ) : (
+                            ) : error ? (
+                                <div className="koran-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : results.length > 0 ? (
                                 <>
                                     <div className="koran-results-wrapper koran-results-desktop">
                                         <table className="koran-results-table">
@@ -364,6 +417,10 @@ function PencarianKoran() {
                                         ))}
                                     </div>
                                 </>
+                            ) : (
+                                <div className="koran-empty-not-found">
+                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
+                                </div>
                             )}
                         </div>
                     )}
