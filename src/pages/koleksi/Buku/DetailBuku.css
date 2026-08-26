@@ -1,0 +1,385 @@
+.buku-detail-main {
+  padding: 2rem 1.5rem 4rem;
+  background-color: #f7f8fa;
+  padding-top: 2rem;
+}
+
+.buku-detail-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 2.5rem;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  width: auto;
+}
+
+.buku-detail-back-button:hover {
+  background-color: #0F8EC8;
+  border-color: #0F8EC8;
+  color: #ffffff;
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(15, 142, 200, 0.25);
+}
+
+.buku-detail-back-button:active {
+  transform: translateX(-2px);
+}
+
+.buku-detail-back-button svg {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.buku-detail-back-button:hover svg {
+  transform: translateX(-2px);
+}
+
+.buku-detail-section {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.buku-detail-container {
+  padding: 2.5rem 0;
+  margin-bottom: 3rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.buku-detail-header {
+  margin-bottom: 2rem;
+  padding: 0 2.5rem;
+  padding-top: 2.5rem;
+}
+
+.buku-detail-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.buku-detail-content-wrapper {
+  display: flex;
+  gap: 3rem;
+  padding: 0 2.5rem 2.5rem;
+}
+
+.buku-detail-cover-section {
+  flex-shrink: 0;
+  width: 35%;
+  max-width: 320px;
+}
+
+.buku-detail-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.buku-detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.buku-detail-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  font-weight: 500;
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+}
+
+.buku-detail-info-section {
+  flex-grow: 1;
+}
+
+.buku-detail-metadata-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.0625rem;
+  margin-bottom: 2rem;
+}
+
+.buku-detail-metadata-table tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.buku-detail-metadata-table tr:hover {
+  background-color: #fafafa;
+}
+
+.buku-detail-metadata-table tr:last-child {
+  border-bottom: none;
+}
+
+.buku-detail-metadata-table td {
+  padding: 14px 0;
+  vertical-align: top;
+}
+
+.buku-detail-label {
+  width: 180px;
+  font-weight: 600;
+  color: #475569;
+  padding-right: 1rem;
+}
+
+.buku-detail-separator {
+  width: 12px;
+  text-align: center;
+  font-weight: bold;
+  color: #0F8EC8;
+  padding: 0 8px;
+}
+
+.buku-detail-value {
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+.buku-detail-sinopsis {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.buku-detail-sinopsis-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #0F8EC8;
+  display: inline-block;
+}
+
+.buku-detail-sinopsis-text {
+  text-align: justify;
+  line-height: 1.8;
+  color: #475569;
+  font-size: 1.0625rem;
+  margin: 0;
+}
+
+.buku-detail-state {
+  padding: 2rem 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.buku-detail-state-error {
+  color: #b91c1c;
+}
+
+.buku-detail-skeleton {
+  padding: 2.5rem 0;
+}
+
+.buku-detail-skeleton-header {
+  height: 2.5rem;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.buku-detail-skeleton-image {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.buku-detail-skeleton-content {
+  height: 1.25rem;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.buku-detail-skeleton-content:last-child {
+  width: 60%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (max-width: 968px) {
+  .buku-detail-content-wrapper {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .buku-detail-cover-section {
+    width: 60%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .buku-detail-main {
+    padding: 1.5rem 1.25rem 3rem;
+    padding-top: 1.5rem;
+  }
+
+  .buku-detail-back-button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+    gap: 0.375rem;
+  }
+
+  .buku-detail-back-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .buku-detail-container {
+    padding: 1.75rem 0;
+  }
+
+  .buku-detail-header {
+    padding: 0 1.5rem;
+    padding-top: 1.75rem;
+  }
+
+  .buku-detail-title {
+    margin-bottom: 0.875rem;
+  }
+
+  .buku-detail-content-wrapper {
+    padding: 0 1.5rem 1.75rem;
+    gap: 1.5rem;
+  }
+
+  .buku-detail-cover-section {
+    width: 70%;
+    max-width: 250px;
+  }
+
+  .buku-detail-metadata-table {
+    font-size: 1rem;
+  }
+
+  .buku-detail-label {
+    width: 140px;
+    font-size: 0.95rem;
+  }
+
+  .buku-detail-sinopsis {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .buku-detail-sinopsis-title {
+    font-size: 1.25rem;
+  }
+
+  .buku-detail-sinopsis-text {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .buku-detail-main {
+    padding: 1.25rem 1rem 2.5rem;
+    padding-top: 1.25rem;
+  }
+
+  .buku-detail-back-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    margin-bottom: 1.5rem;
+    gap: 0.375rem;
+  }
+
+  .buku-detail-back-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .buku-detail-container {
+    padding: 1.5rem 0;
+    border-radius: 8px;
+  }
+
+  .buku-detail-header {
+    padding: 0 1.25rem;
+    padding-top: 1.5rem;
+  }
+
+  .buku-detail-title {
+    font-size: 1.5rem;
+  }
+
+  .buku-detail-content-wrapper {
+    padding: 0 1.25rem 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .buku-detail-cover-section {
+    width: 80%;
+    max-width: 220px;
+  }
+
+  .buku-detail-metadata-table {
+    font-size: 0.9rem;
+  }
+
+  .buku-detail-label {
+    width: 120px;
+    font-size: 0.9rem;
+    padding-right: 0.5rem;
+  }
+
+  .buku-detail-separator {
+    padding: 0 4px;
+  }
+
+  .buku-detail-sinopsis-title {
+    font-size: 1.1rem;
+  }
+
+  .buku-detail-sinopsis-text {
+    font-size: 0.9375rem;
+  }
+}

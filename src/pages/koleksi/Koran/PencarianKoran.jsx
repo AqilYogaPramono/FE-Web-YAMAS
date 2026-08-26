@@ -1,167 +1,429 @@
-import React, { useState } from 'react';
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './PencarianKoran.css';
 
-const newspaperCategories = [
-    { name: 'Kompas', href: '#' },
-    { name: 'Jawa Pos', href: '#' },
-    { name: 'Surya', href: '#' },
-    { name: 'Media Indonesia', href: '#' },
-    { name: 'Tempo Harian', href: '#' },
+const BULAN_OPTIONS = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// hasil pencarian
-const dummyResults = [
-    { publisher: 'Jawa Pos', month: 'Januari', year: 1980, status: 'Tersedia' },
-    { publisher: 'Jawa Pos', month: 'Februari', year: 1980, status: 'Tersedia' },
-    { publisher: 'Kompas', month: 'Maret', year: 1985, status: 'Tersedia' },
-];
-
+const TAHUN_OPTIONS = [];
+const currentYear = new Date().getFullYear();
+for (let year = 1950; year <= currentYear; year++) {
+    TAHUN_OPTIONS.push(year);
+}
+TAHUN_OPTIONS.reverse();
 
 function PencarianKoran() {
-    const [publisher, setPublisher] = useState('');
-    const [year, setYear] = useState('');
-    const [month, setMonth] = useState('');
+    const location = useLocation();
+    const [penerbitKoran, setPenerbitKoran] = useState([]);
+    const [koleksiTerbaru, setKoleksiTerbaru] = useState([]);
+    const [idPenerbitKoran, setIdPenerbitKoran] = useState('');
+    const [tahun, setTahun] = useState('');
+    const [bulan, setBulan] = useState('');
     const [showResults, setShowResults] = useState(false);
-    
-    const [results, setResults] = useState(dummyResults);
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
 
-    const handleSubmit = (e) => {
+    const apiUrl = import.meta.env.VITE_API_E_KATALOG;
+
+    useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            return;
+        }
+        const fetchPenerbit = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/API/penerbit-koran`);
+                if (!response.ok) {
+                    return;
+                }
+
+                const data = await response.json();
+                const penerbitList = data?.penerbitKoran || [];
+                const formattedPenerbit = penerbitList.map(p => ({
+                    id: p.id,
+                    nama_penerbit: p.nama_penerbit
+                }));
+                setPenerbitKoran(formattedPenerbit);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchPenerbit();
+    }, [apiUrl]);
+
+    useEffect(() => {
+        if (!apiUrl) {
+            setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            setLoading(false);
+            return;
+        }
+        const fetchKoleksi = async () => {
+            try {
+                setLoading(true);
+                setFetchError(null);
+
+                const response = await fetch(`${apiUrl}/API/new-koran`);
+                if (!response.ok) {
+                    setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                    setLoading(false);
+                    return;
+                }
+
+                const data = await response.json();
+                const koleksi = data?.data || [];
+                setKoleksiTerbaru(koleksi.slice(0, 6));
+            } catch (err) {
+                console.error(err);
+                setFetchError('Gagal memuat data koran. Silakan coba lagi nanti.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchKoleksi();
+    }, [apiUrl]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const isSearching = publisher || year || month;
-        
-        if (isSearching) {
-            
-            setShowResults(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
+        if (!idPenerbitKoran && !tahun && !bulan) {
             setShowResults(false);
+            return;
+        }
+
+        try {
+            setSearchLoading(true);
+            setError(null);
+
+            if (!apiUrl) {
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
+            }
+
+            const response = await fetch(`${apiUrl}/API/koran/search`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_penerbit_koran: idPenerbitKoran || null,
+                    tahun: tahun || null,
+                    bulan: bulan || null
+                })
+            });
+
+            if (!response.ok) {
+                setShowResults(false);
+                setResults([]);
+                setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+                return;
+            }
+
+            const data = await response.json();
+            setResults(data?.koran || []);
+            setShowResults(true);
+            
+            setTimeout(() => {
+                const pageContent = document.querySelector('.page-content');
+                if (pageContent) {
+                    const offsetTop = pageContent.offsetTop - 20;
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                }
+            }, 100);
+        } catch (err) {
+            console.error(err);
+            setShowResults(false);
+            setResults([]);
+            setError('Gagal memuat data koran. Silakan coba lagi nanti.');
+        } finally {
+            setSearchLoading(false);
         }
     };
 
     const handleClearSearch = (e) => {
         e.preventDefault();
-        
-        setPublisher('');
-        setYear('');
-        setMonth('');
-        
+        setIdPenerbitKoran('');
+        setTahun('');
+        setBulan('');
         setShowResults(false);
+        setResults([]);
+        setError(null);
+        setFetchError(null);
     };
+
+    const getPenerbitName = (id) => {
+        if (!id) return '';
+        const penerbit = penerbitKoran.find(p => p.id === parseInt(id));
+        return penerbit?.nama_penerbit || 'Tidak diketahui';
+    };
+
+    const currentUrl = `${window.location.origin}${location.pathname}`;
 
     return (
         <>
+            <Helmet>
+                <title>Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya</title>
+                <meta
+                    name="description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta
+                    name="keywords"
+                    content="pencarian koran, koleksi koran perpustakaan medayu agung, katalog koran surabaya, pencarian koran perpustakaan, katalog online perpustakaan, koleksi koran lama, arsip koran"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta
+                    property="og:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    property="og:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta property="og:locale" content="id_ID" />
+                <meta
+                    property="og:site_name"
+                    content="Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta
+                    name="twitter:title"
+                    content="Pencarian Koran - Koleksi Perpustakaan Medayu Agung Surabaya"
+                />
+                <meta
+                    name="twitter:description"
+                    content="Cari dan temukan koleksi koran di Perpustakaan Medayu Agung Surabaya. Jelajahi ribuan koran dengan pencarian berdasarkan penerbit, tahun, dan bulan terbit."
+                />
+                <meta name="robots" content="index, follow" />
+                <meta name="author" content="Perpustakaan Medayu Agung Surabaya" />
+                <link rel="canonical" href={currentUrl} />
+            </Helmet>
             <div className="hero-koran-search">
                 <div className="container">
-                    <h1>Temukan Koleksi Pustaka Kami</h1>
-                    <p>Jelajahi ribuan koran yang tersedia.</p>
+                    <div className="hero-koran-content">
+                        <h1>Temukan Koleksi Pustaka Kami</h1>
+                        <p>Jelajahi ribuan koran yang tersedia di perpustakaan kami.</p>
+                    </div>
                     
                     <form className="koran-search-form" onSubmit={handleSubmit}>
                         <div className="koran-filters-wrapper">
-                            
-                            {/* filter penerbit koran */}
                             <div className="filter-group">
-                                <span className="material-symbols-rounded">search</span>
                                 <select 
                                     className="koran-select" 
                                     id="penerbitKoran"
-                                    value={publisher}
-                                    onChange={(e) => setPublisher(e.target.value)}
+                                    value={idPenerbitKoran}
+                                    onChange={(e) => setIdPenerbitKoran(e.target.value)}
                                 >
-                                    <option value="">Penerbit koran</option>
-                                    <option value="jawapos">Jawa Pos</option>
-                                    <option value="kompas">Kompas</option>
+                                    <option value="">Pilih Penerbit</option>
+                                    {penerbitKoran.map((penerbit) => (
+                                        <option key={penerbit.id} value={penerbit.id}>
+                                            {penerbit.nama_penerbit}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
-                            {/* tahun */}
                             <div className="filter-group">
-                                <span className="material-symbols-rounded">calendar_today</span>
-                                <input 
-                                    type="text" 
-                                    placeholder="Tahun" 
-                                    className="koran-input" 
+                                <select 
+                                    className="koran-select" 
                                     id="tahunKoran"
-                                    value={year}
-                                    onChange={(e) => setYear(e.target.value)}
-                                />
+                                    value={tahun}
+                                    onChange={(e) => setTahun(e.target.value)}
+                                >
+                                    <option value="">Pilih Tahun</option>
+                                    {TAHUN_OPTIONS.map((year) => (
+                                        <option key={year} value={year}>
+                                            {year}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
-                            {/* bulan */}
                             <div className="filter-group">
-                                <span className="material-symbols-rounded">calendar_month</span>
-                                <input 
-                                    type="text" 
-                                    placeholder="Bulan" 
-                                    className="koran-input" 
+                                <select 
+                                    className="koran-select" 
                                     id="bulanKoran"
-                                    value={month}
-                                    onChange={(e) => setMonth(e.target.value)}
-                                />
+                                    value={bulan}
+                                    onChange={(e) => setBulan(e.target.value)}
+                                >
+                                    <option value="">Pilih Bulan</option>
+                                    {BULAN_OPTIONS.map((bulanItem) => (
+                                        <option key={bulanItem} value={bulanItem}>
+                                            {bulanItem}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             
-                            <button type="submit" className="btn-cari">Cari</button>
+                            <button 
+                                type="submit" 
+                                className="btn-cari"
+                                disabled={searchLoading}
+                            >
+                                {searchLoading ? 'Mencari...' : 'Cari'}
+                            </button>
                         </div>
                     </form>
-                    
                 </div>
             </div>
 
             <main className="page-content">
                 <div className="container">
-                    
-                    {!showResults && (
-                        <div id="koranCategories">
-                            <h2 className="section-title">Koleksi Koran</h2>
-                            
-                            <div className="koran-grid">
-                                {newspaperCategories.map((koran) => (
-                                    <a href={koran.href} className="koran-card" key={koran.name}>
-                                        <div className="koran-image-wrapper"></div>
-                                        <div className="koran-info"><h3>{koran.name}</h3></div>
-                                    </a>
+                    {loading && (
+                        <div className="koran-skeleton-section">
+                            <div className="koran-skeleton-title"></div>
+                            <div className="koran-skeleton-grid">
+                                {[1, 2, 3, 4, 5, 6].map((item) => (
+                                    <div key={item} className="koran-skeleton-card" />
                                 ))}
                             </div>
                         </div>
                     )}
-                    
-                    {showResults && (
-                        <div id="koranResults">
-                            <div className="results-header">
-                                <h2 className="section-title">Hasil Pencarian</h2>
-                                <a href="#" className="btn-hapus" onClick={handleClearSearch}>
-                                    <span className="material-symbols-rounded">close</span> Hapus Pencarian
-                                </a>
+
+                    {!loading && !showResults && (
+                        <div id="koranTerbaru">
+                            <div className="section-header">
+                                <h2 className="section-title">Koleksi Koran Terbaru</h2>
+                                <p className="section-description">Jelajahi koleksi koran terbaru yang tersedia di perpustakaan kami</p>
                             </div>
-                            
-                            <table className="koran-results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Penerbit</th>
-                                        <th>Bulan</th>
-                                        <th>Tahun</th>
-                                        <th>Ketersediaan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {results.map((result, index) => (
-                                        <tr key={index}>
-                                            <td data-label="Penerbit">{result.publisher}</td>
-                                            <td data-label="Bulan">{result.month}</td>
-                                            <td data-label="Tahun">{result.year}</td>
-                                            <td data-label="Ketersediaan">
-                                                <span className={`ketersediaan-badge ${result.status === 'Tersedia' ? 'tersedia' : 'tidak-tersedia'}`}>
-                                                    {result.status}
-                                                </span>
-                                            </td>
-                                        </tr>
+                            {fetchError ? (
+                                <div className="koran-empty koran-empty-error">
+                                    <p>{fetchError}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : koleksiTerbaru.length > 0 ? (
+                                <div className="koran-grid">
+                                    {koleksiTerbaru.map((koran) => (
+                                        <div className="koran-card" key={koran.id}>
+                                            <div className="koran-image-wrapper">
+                                                {koran.foto && (
+                                                    <img 
+                                                        src={`${apiUrl}/images/penerbit-koran/${koran.foto}`}
+                                                        alt={koran.nama_penerbit}
+                                                        loading="lazy"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="koran-info">
+                                                <h3>{koran.nama_penerbit}</h3>
+                                            </div>
+                                        </div>
                                     ))}
-                                </tbody>
-                            </table>
+                                </div>
+                            ) : (
+                                <div className="koran-empty">
+                                    <p>Belum ada koleksi koran yang tersedia.</p>
+                                </div>
+                            )}
                         </div>
                     )}
                     
+                    {!loading && showResults && (
+                        <div id="koranResults">
+                            <div className="results-header">
+                                <h2 className="section-title">Hasil Pencarian</h2>
+                                <button 
+                                    type="button"
+                                    className="btn-hapus" 
+                                    onClick={handleClearSearch}
+                                >
+                                    <span className="material-symbols-rounded">close</span> Hapus Pencarian
+                                </button>
+                            </div>
+                            
+                            {searchLoading ? (
+                                <div className="loading-state">
+                                    <span className="material-symbols-rounded">hourglass_empty</span>
+                                    <p>Memuat hasil pencarian...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="koran-empty-not-found">
+                                    <p>{error}</p>
+                                    <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : results.length > 0 ? (
+                                <>
+                                    <div className="koran-results-wrapper koran-results-desktop">
+                                        <table className="koran-results-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Penerbit</th>
+                                                    <th>Bulan</th>
+                                                    <th>Tahun</th>
+                                                    <th>Ketersediaan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {results.map((result, index) => (
+                                                    <tr key={result.id || index}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{result.nama_penerbit || getPenerbitName(result.id_penerbit_koran)}</td>
+                                                        <td>{result.bulan}</td>
+                                                        <td>{result.tahun}</td>
+                                                        <td>
+                                                            <span className={`ketersediaan-badge ${result.ketersediaan === 'Tersedia' ? 'tersedia' : 'tidak-tersedia'}`}>
+                                                                {result.ketersediaan}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="koran-results-mobile">
+                                        {results.map((result, index) => (
+                                            <div className="koran-result-card" key={result.id || index}>
+                                                <div className="result-card-row">
+                                                    <span className="result-label">No</span>
+                                                    <span className="result-value">{index + 1}</span>
+                                                </div>
+                                                <div className="result-card-row">
+                                                    <span className="result-label">Penerbit</span>
+                                                    <span className="result-value">{result.nama_penerbit || getPenerbitName(result.id_penerbit_koran)}</span>
+                                                </div>
+                                                <div className="result-card-row">
+                                                    <span className="result-label">Bulan</span>
+                                                    <span className="result-value">{result.bulan}</span>
+                                                </div>
+                                                <div className="result-card-row">
+                                                    <span className="result-label">Tahun</span>
+                                                    <span className="result-value">{result.tahun}</span>
+                                                </div>
+                                                <div className="result-card-row">
+                                                    <span className="result-label">Ketersediaan</span>
+                                                    <span className="result-value">
+                                                        <span className={`ketersediaan-badge ${result.ketersediaan === 'Tersedia' ? 'tersedia' : 'tidak-tersedia'}`}>
+                                                            {result.ketersediaan}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="koran-empty-not-found">
+                                    <p>Data koran yang Anda cari tidak ditemukan.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </main>
         </>

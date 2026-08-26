@@ -17,5 +17,59 @@ html, body, #root {
 
 .content {
   flex: 1;
+  padding-top: 80px;
+  padding-bottom: 0;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.content-no-navbar {
+  padding-top: 0;
+}
+
+main {
+  flex: 1;
+  padding: 2rem 1.5rem 4rem;
+}
+
+main[class*="beranda"],
+main:has(.hero-slider) {
+  padding: 0;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    padding-top: 62px;
+    min-height: calc(100vh - 62px);
+  }
+
+  main {
+    padding: 1.5rem 1.5rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding-top: calc(52px + 1.25rem);
+    min-height: calc(100vh - 52px);
+  }
+
+  main {
+    padding: 1.5rem 1.25rem 3rem;
+    padding-top: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding-top: calc(48px + 1rem);
+    min-height: calc(100vh - 48px);
+  }
+
+  main {
+    padding: 1.25rem 1rem 2.5rem;
+    padding-top: 1.25rem;
+  }
 }
 
