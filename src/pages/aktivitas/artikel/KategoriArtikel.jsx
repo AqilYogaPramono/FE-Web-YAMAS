@@ -14,7 +14,7 @@ const KategoriArtikel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const location = useLocation();
-  const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+  const apiUrl = import.meta.env.VITE_API_BLOG;
 
   useEffect(() => {
     window.scrollTo(0, 0);

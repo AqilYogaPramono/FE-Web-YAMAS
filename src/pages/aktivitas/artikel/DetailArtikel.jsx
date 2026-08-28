@@ -19,7 +19,7 @@ const DetailArtikel = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+        const apiUrl = import.meta.env.VITE_API_BLOG;
         const response = await fetch(`${apiUrl}/API/blog/${tautan}`);
         if (!response.ok) {
           throw new Error("Gagal mengambil data blog");
@@ -46,7 +46,7 @@ const DetailArtikel = () => {
     return date.toLocaleDateString('id-ID', options);
   };
 
-  const apiUrl = import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN;
+  const apiUrl = import.meta.env.VITE_API_BLOG;
   const currentUrl = `${window.location.origin}${location.pathname}`;
   
   const getPlainText = (html) => {
@@ -231,7 +231,7 @@ const DetailArtikel = () => {
           {blog.foto_cover && (
             <div className="blog-detail-image">
               <img
-                src={`${import.meta.env.VITE_API_BLOG || import.meta.env.VITE_API_PENGELOAAN_KONTEN}${blog.foto_cover}`}
+                src={`${import.meta.env.VITE_API_BLOG}${blog.foto_cover}`}
                 alt={blog.judul}
                 loading="eager"
               />
